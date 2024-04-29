@@ -1,7 +1,6 @@
 from src.knowledge_base import KnowledgeBase
 from src.query import Query
 
-
 class FileParser:
 
     @staticmethod

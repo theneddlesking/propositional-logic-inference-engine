@@ -1,5 +1,5 @@
-from knowledge_base import KnowledgeBase
-from query import Query
+from src.knowledge_base import KnowledgeBase
+from src.query import Query
 from src.algorithm_result import AlgorithmResult
 
 class InferenceAlgorithm:
