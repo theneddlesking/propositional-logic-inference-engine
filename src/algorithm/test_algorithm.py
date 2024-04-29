@@ -9,5 +9,6 @@ class TestAlgorithm(InferenceAlgorithm):
     def __init__(self):
         super().__init__("TEST")
 
+    # test algorithm just immediately returns a dummy test result
     def run(self, knowledge_base: KnowledgeBase, query: Query) -> AlgorithmResult:
         return TestResult()

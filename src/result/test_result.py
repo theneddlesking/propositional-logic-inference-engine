@@ -5,5 +5,6 @@ class TestResult(AlgorithmResult):
     def __init__(self):
         super().__init__("TEST")
 
+    # dummy test result that just says the test algorithm ran correctly
     def __str__(self) -> str:
         return "The test algorithm ran correctly, and a result was created."
