@@ -7,6 +7,7 @@ class FileParser:
     @staticmethod
     def parse_standard_file_from_path(file_path: str) -> tuple[KnowledgeBase, Query]:
         with open(file_path, 'r') as file:
+            # get the lines from the file
             lines = file.readlines()
             
             # file must have 4 lines
