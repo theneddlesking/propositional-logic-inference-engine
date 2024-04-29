@@ -6,4 +6,7 @@ class AlgorithmResult:
         self.algorithm_name = algorithm_name
 
     def __str__(self) -> str:
-        raise NotImplementedError("This method must be implemented by the subclass.")
+        raise NotImplementedError("__str__ method must be implemented by the subclass.")
+
+    def __eq__(self, other: 'AlgorithmResult') -> bool:
+        raise NotImplementedError("__eq__ method must be implemented by the subclass.")
