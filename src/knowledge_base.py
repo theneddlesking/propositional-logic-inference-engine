@@ -7,4 +7,3 @@ class KnowledgeBase:
     @classmethod
     def from_string(self, string: str) -> 'KnowledgeBase':
         pass
-   
