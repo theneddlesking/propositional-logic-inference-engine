@@ -13,7 +13,7 @@ def main():
 
     # get the file name and inference algorithm name
     file_path = sys.argv[1]
-    inference_algorithm_name = sys.argv[2]
+    inference_algorithm_name = sys.argv[2].upper()
 
     # get the inference algorithm
     inference_algorithm = InferenceAlgorithmFactory.get_inference_algorithm_from_name(inference_algorithm_name)
