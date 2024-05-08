@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class Operator(Enum):
-    IMPLICATION = '->'
+    IMPLICATION = '=>'
     AND = '&'
     NEGATION = '~'
     CONJUNCTION = '&'
     DISJUNCTION = '||'
-    BICONDITIONAL = '<->'
+    BICONDITIONAL = '<=>'

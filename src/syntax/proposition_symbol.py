@@ -1,10 +1,10 @@
 from src.syntax.atom import Atom
-from src.syntax.sentence import Sentence
+from src.syntax.utils import Utils
 
 
 class PropositionSymbol(Atom):
     def __init__(self, symbol: str, value: bool = None):
-        if not Sentence.is_proposition_symbol(symbol):
+        if not Utils.is_proposition_symbol(symbol):
             raise ValueError(f"{symbol} is not a valid propositional symbol. Should be a capital letter.")
 
         super().__init__(symbol, value)
