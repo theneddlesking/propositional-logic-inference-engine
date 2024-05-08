@@ -54,9 +54,7 @@ class ForwardChaining(InferenceAlgorithm):
                                 # add the symbol to the agenda
                                 agenda.append(sentence.atom)
                             else:
-                                # add the conclusion to the agenda
-                                sentence: Expression
-
+                                # get the positive symbol
                                 atom = self.get_positive_symbol(sentence)
 
                                 # add the symbol to the agenda
