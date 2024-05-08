@@ -7,18 +7,28 @@ from src.syntax.utils import Utils
 class Sentence:
     
     @classmethod
-    def from_string(cls, string: str):
+    def from_string(cls, string: str, dict: dict[str, PropositionSymbol]) -> 'Sentence':
         # is the string a proposition symbol?
         if Utils.is_proposition_symbol(string):
-            return AtomicSentence(PropositionSymbol.from_string(string))
+
+            # get symbol from dict
+            symbol = dict.get(string)
+
+            if symbol is None:
+                # create new symbol
+                symbol = PropositionSymbol.from_string(string)
+
+            # add to dict
+            dict[symbol.name] = symbol
+
+            return AtomicSentence(symbol)
         
         # is the string a boolean value?
         if Utils.is_true_false(string):
             return AtomicSentence(BoolAtom.from_string(string))
 
         # otherwise this is a complex sentence
-        return Expression.from_string(string)
-
+        return Expression.from_string(string, dict)
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -39,7 +49,7 @@ class Expression(Sentence):
     
     # TODO verify that this works, not sure
     @classmethod
-    def from_string(cls, string: str) -> 'Expression':
+    def from_string(cls, string: str, dict: dict[str, PropositionSymbol]) -> 'Expression':
         # find the operator can be multiple chars long
         operator = None
         for op in Operator:
@@ -53,4 +63,4 @@ class Expression(Sentence):
         # split the string into lhs and rhs at the first operator only
         lhs, rhs = string.split(operator.value, 1)
         
-        return cls(Sentence.from_string(lhs), operator, Sentence.from_string(rhs))
+        return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))

@@ -25,3 +25,4 @@ class Utils:
     @staticmethod
     def is_true_false(string: str) -> bool:
         return string == "True" or string == "False"
+    
