@@ -8,3 +8,6 @@ class Operator(Enum):
     CONJUNCTION = '&'
     DISJUNCTION = '||'
     BICONDITIONAL = '<=>'
+
+    def __str__(self):
+        return self.value
