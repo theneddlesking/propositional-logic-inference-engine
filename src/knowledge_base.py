@@ -3,7 +3,6 @@ from src.syntax.proposition_symbol import PropositionSymbol
 
 
 class KnowledgeBase:
-    # TODO implement knowledge base, figure out what properties and methods are needed
     def __init__(self, sentences: list[Sentence] = None, propositional_symbols: dict[str, PropositionSymbol] = None):
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else {}
         self.sentences = sentences if sentences is not None else []
@@ -26,7 +25,6 @@ class KnowledgeBase:
 
         # get the actual sentences and update the propositional symbols dictionary
         sentences = [Sentence.from_string(sentence, propositional_symbols) for sentence in sentences]
-
 
         return cls(sentences, propositional_symbols)
     
