@@ -94,9 +94,12 @@ class ForwardChaining(InferenceAlgorithm):
                 for symbol in symbols.values():
                     if lhs.symbol_in_sentence(symbol):
                         count[symbol] = count.get(symbol, 0) + 1
+            else:
+                # otherwise is atomic,
+                sentence: AtomicSentence
+                atom = sentence.atom
 
-        # any that don't exist init to 0
-        for symbol in symbols.values():
-            count[symbol] = count.get(symbol, 0)
+                # init count to 0
+                count[atom] = 1
 
         return count
