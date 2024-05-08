@@ -21,7 +21,7 @@ class ForwardChaining(InferenceAlgorithm):
 
         while len(agenda) > 0:
             # get the first of the agenda as the symbol
-            p = agenda.pop(0)
+            known_symbol = agenda.pop(0)
 
             # assumes that query sentence is atomic with a single symbol not true or false
             sentence: AtomicSentence = query.sentence
@@ -30,20 +30,20 @@ class ForwardChaining(InferenceAlgorithm):
             atom: PropositionSymbol = sentence.atom
 
             # check if p is the query we are looking for
-            if p == atom:
+            if known_symbol == atom:
                 # we found q
                 return ChainingResult(self.name, True, len(inferred))
             
             # does inferred have p?
-            if p not in inferred:
+            if known_symbol not in inferred:
                 # add p to inferred
-                inferred[p] = True
+                inferred[known_symbol] = True
 
                 # for each sentence in kb
                 for sentence in knowledge_base.sentences:
 
                     # if p in sentence
-                    if sentence.symbol_in_sentence(p):
+                    if sentence.symbol_in_sentence(known_symbol):
 
                         # decrement count[sentence]
                         count[sentence] -= 1
