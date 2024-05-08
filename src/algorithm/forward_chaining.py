@@ -99,7 +99,7 @@ class ForwardChaining(InferenceAlgorithm):
                 sentence: AtomicSentence
                 atom = sentence.atom
 
-                # init count to 0
+                # init count to 1
                 count[atom] = 1
 
         return count
