@@ -5,7 +5,10 @@ from src.algorithm_result import AlgorithmResult
 
 # TODO implement the ChainingResult class
 class ChainingResult(AlgorithmResult):
-    def __init__(self, algorithm_name: str):
+    def __init__(self, algorithm_name: str, found: bool, count: int):
         super().__init__(algorithm_name)
+        self.found = found
+        self.count = count
 
-        
+    def __str__(self) -> str:
+        return f"{self.algorithm_name} found: {self.found}, count: {self.count}"

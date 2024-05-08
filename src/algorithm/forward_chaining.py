@@ -2,6 +2,7 @@ from src.algorithm_result import AlgorithmResult
 from src.inference_algorithm import InferenceAlgorithm
 from src.knowledge_base import KnowledgeBase
 from src.query import Query
+from src.result.chaining_result import ChainingResult
 from src.syntax.proposition_symbol import PropositionSymbol
 from src.syntax.sentence import AtomicSentence, Expression
 
@@ -31,7 +32,7 @@ class ForwardChaining(InferenceAlgorithm):
             # check if p is the query we are looking for
             if p == atom:
                 # we found q
-                return AlgorithmResult(True, count)
+                return ChainingResult(self.name, True, len(inferred))
             
             # does inferred have p?
             if p not in inferred:
@@ -43,6 +44,11 @@ class ForwardChaining(InferenceAlgorithm):
 
                     # if p in sentence
                     if sentence.symbol_in_lhs_sentence(p):
+
+                        # if p not in count
+                        if p not in count:
+                            # add p to count
+                            count[p] = 0
 
                         # decrement count[p]
                         count[p] -= 1
@@ -64,7 +70,7 @@ class ForwardChaining(InferenceAlgorithm):
                                 agenda.append(rhs.atom)
 
         # we couldn't find it
-        return AlgorithmResult(False, count)
+        return ChainingResult(self.name, False, len(inferred))
 
     # init agenda
     def init_agenda(self, knowledge_base: KnowledgeBase) -> list[PropositionSymbol]:
