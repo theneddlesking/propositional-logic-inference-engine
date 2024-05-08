@@ -27,4 +27,4 @@ class KnowledgeBase:
         return cls(sentences)
     
     def __str__(self):
-        return ";".join([str(sentence) for sentence in self.sentences])
+        return "\n".join([str(sentence) for sentence in self.sentences])
