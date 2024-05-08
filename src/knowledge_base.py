@@ -19,7 +19,7 @@ class KnowledgeBase:
         sentences = string.split(";")
 
         # remove any empty strings
-        sentences = [sentence != "" for sentence in sentences if sentence]
+        sentences = [sentence for sentence in sentences if sentence != ""]
 
         # get the actual sentences
         sentences = [Sentence.from_string(sentence) for sentence in sentences]
