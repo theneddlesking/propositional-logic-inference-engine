@@ -4,7 +4,7 @@ from src.knowledge_base import KnowledgeBase
 from src.query import Query
 from src.result.chaining_result import ChainingResult
 from src.syntax.proposition_symbol import PropositionSymbol
-from src.syntax.sentence import AtomicSentence, Expression
+from src.syntax.sentence import AtomicSentence, Expression, Sentence
 
 # TODO implement the ForwardChaining class
 class ForwardChaining(InferenceAlgorithm):
@@ -46,9 +46,9 @@ class ForwardChaining(InferenceAlgorithm):
                     if sentence.symbol_in_sentence(p):
 
                         # decrement count[p]
-                        count[p] -= 1
+                        count[sentence] -= 1
 
-                        if count[p] == 0:
+                        if count[sentence] == 0:
                             # add conclusion
                             if isinstance(sentence, AtomicSentence):
                                 # add the symbol to the agenda
@@ -79,7 +79,7 @@ class ForwardChaining(InferenceAlgorithm):
         return agenda
     
     # init count
-    def init_count(self, knowledge_base: KnowledgeBase) -> dict[PropositionSymbol, int]:
+    def init_count(self, knowledge_base: KnowledgeBase) -> dict[Sentence, int]:
         count = {}
 
         symbols = knowledge_base.propositional_symbols
@@ -93,13 +93,12 @@ class ForwardChaining(InferenceAlgorithm):
                 # checks to see if the symbol is in the sentence
                 for symbol in symbols.values():
                     if lhs.symbol_in_sentence(symbol):
-                        count[symbol] = count.get(symbol, 0) + 1
+                        count[sentence] = count.get(symbol, 0) + 1
             else:
                 # otherwise is atomic
                 sentence: AtomicSentence
-                atom = sentence.atom
-
+                
                 # init count to 1
-                count[atom] = 1
+                count[sentence] = 1
 
         return count
