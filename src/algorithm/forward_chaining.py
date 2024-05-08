@@ -88,9 +88,9 @@ class ForwardChaining(InferenceAlgorithm):
         for sentence in knowledge_base.sentences:
             if isinstance(sentence, Expression):
                 # get number of symbols on LHS
+                lhs = sentence.lhs
 
-                lhs: AtomicSentence = sentence.lhs
-
+                # checks to see if the symbol is in the sentence
                 for symbol in symbols.values():
                     if lhs.symbol_in_sentence(symbol):
                         count[symbol] = count.get(symbol, 0) + 1
