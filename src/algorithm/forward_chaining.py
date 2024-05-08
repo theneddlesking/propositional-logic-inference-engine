@@ -45,7 +45,7 @@ class ForwardChaining(InferenceAlgorithm):
                     # if p in sentence
                     if sentence.symbol_in_sentence(p):
 
-                        # decrement count[p]
+                        # decrement count[sentence]
                         count[sentence] -= 1
 
                         if count[sentence] == 0:
@@ -97,7 +97,7 @@ class ForwardChaining(InferenceAlgorithm):
             else:
                 # otherwise is atomic
                 sentence: AtomicSentence
-                
+
                 # init count to 1
                 count[sentence] = 1
 
