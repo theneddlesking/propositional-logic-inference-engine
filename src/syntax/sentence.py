@@ -29,6 +29,10 @@ class Sentence:
 
         # otherwise this is a complex sentence
         return Expression.from_string(string, dict)
+    
+    # TODO kinda hacky, but it works
+    def symbol_in_lhs_sentence(self, symbol: PropositionSymbol) -> bool:
+        return str(symbol) in str(self)
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -64,3 +68,6 @@ class Expression(Sentence):
         lhs, rhs = string.split(operator.value, 1)
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
+    
+    def symbol_in_lhs_sentence(self, symbol: PropositionSymbol) -> bool:
+        return self.lhs.symbol_in_lhs_sentence(symbol)
