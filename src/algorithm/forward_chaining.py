@@ -14,7 +14,7 @@ class ForwardChaining(InferenceAlgorithm):
     # TODO make this work only with horn kb because it is forward chaining
     # TODO we also need a query specific for horn kb because it has to be a single proposition symbol
     def run(self, knowledge_base: KnowledgeBase, query: Query) -> AlgorithmResult:
-        count = {}
+        count = self.init_count(knowledge_base)
         inferred = {}
 
         agenda: list[PropositionSymbol]= self.init_agenda(knowledge_base)
@@ -44,16 +44,9 @@ class ForwardChaining(InferenceAlgorithm):
 
                     # if p in sentence
                     if sentence.symbol_in_lhs_sentence(p):
-
-                        # if p not in count
-                        if p not in count:
-                            # add p to count
-                            count[p] = 0
-
                         # decrement count[p]
                         count[p] -= 1
 
-                        # if count[p] == 0
                         if count[p] == 0:
                             # add conclusion
                             if isinstance(sentence, AtomicSentence):
@@ -83,3 +76,11 @@ class ForwardChaining(InferenceAlgorithm):
                 agenda.append(sentence.atom)
 
         return agenda
+    
+    # init count
+    def init_count(self, knowledge_base: KnowledgeBase) -> dict[PropositionSymbol, int]:
+        count = {}
+
+        # for every top level sentence, count the number of symbols in the sentence
+
+        return count
