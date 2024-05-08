@@ -31,7 +31,7 @@ class Sentence:
         return Expression.from_string(string, dict)
     
     # TODO kinda hacky, but it works
-    def symbol_in_lhs_sentence(self, symbol: PropositionSymbol) -> bool:
+    def symbol_in_sentence(self, symbol: PropositionSymbol) -> bool:
         return str(symbol) in str(self)
 
 class AtomicSentence(Sentence):
@@ -69,5 +69,3 @@ class Expression(Sentence):
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
     
-    def symbol_in_lhs_sentence(self, symbol: PropositionSymbol) -> bool:
-        return self.lhs.symbol_in_lhs_sentence(symbol)

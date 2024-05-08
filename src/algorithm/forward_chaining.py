@@ -43,7 +43,8 @@ class ForwardChaining(InferenceAlgorithm):
                 for sentence in knowledge_base.sentences:
 
                     # if p in sentence
-                    if sentence.symbol_in_lhs_sentence(p):
+                    if sentence.symbol_in_sentence(p):
+
                         # decrement count[p]
                         count[p] -= 1
 
@@ -81,6 +82,21 @@ class ForwardChaining(InferenceAlgorithm):
     def init_count(self, knowledge_base: KnowledgeBase) -> dict[PropositionSymbol, int]:
         count = {}
 
+        symbols = knowledge_base.propositional_symbols
+
         # for every top level sentence, count the number of symbols in the sentence
+        for sentence in knowledge_base.sentences:
+            if isinstance(sentence, Expression):
+                # get number of symbols on LHS
+
+                lhs: AtomicSentence = sentence.lhs
+
+                for symbol in symbols.values():
+                    if lhs.symbol_in_sentence(symbol):
+                        count[symbol] = count.get(symbol, 0) + 1
+
+        # any that don't exist init to 0
+        for symbol in symbols.values():
+            count[symbol] = count.get(symbol, 0)
 
         return count
