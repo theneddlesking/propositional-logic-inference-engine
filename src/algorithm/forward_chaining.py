@@ -57,14 +57,18 @@ class ForwardChaining(InferenceAlgorithm):
                                 # add the conclusion to the agenda
                                 sentence: Expression
 
-                                # assumes that the conclusion is always one symbol on the RHS
-                                rhs: AtomicSentence = sentence.rhs
+                                atom = self.get_positive_symbol(sentence)
 
                                 # add the symbol to the agenda
-                                agenda.append(rhs.atom)
+                                agenda.append(atom)
 
         # we couldn't find it
         return ChainingResult(self.name, False, len(inferred))
+    
+    # TODO fix this for non atomic sentences
+    def get_positive_symbol(self, sentence: Expression) -> PropositionSymbol:
+        # currently assumes that the conclusion is always one symbol on the RHS which isn't necessarily true
+        return sentence.rhs.atom
 
     # init agenda
     def init_agenda(self, knowledge_base: KnowledgeBase) -> list[PropositionSymbol]:
