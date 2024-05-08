@@ -1,9 +1,10 @@
-class Query:
-    # TODO implement query class, figure out what properties and methods are needed
-    def __init__(self):
-        pass
+from src.syntax.sentence import Sentence
 
-    # TODO implement query from string
+
+class Query:
+    def __init__(self, sentence: 'Sentence'):
+        self.sentence = sentence
+
     @classmethod
-    def from_string(self, string: str) -> 'Query':
-        pass
+    def from_string(cls, string: str) -> 'Query':
+        return cls(Sentence.from_string(string))
