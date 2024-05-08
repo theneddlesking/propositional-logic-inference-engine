@@ -25,7 +25,7 @@ class FileParser:
             knowledge_base = KnowledgeBase.from_string(lines[1].strip())
 
             # fourth line is the query
-            query = Query.from_string(lines[3].strip())
+            query = Query.from_string(lines[3].strip(), knowledge_base.propositional_symbols)
 
             # return the knowledge base and query
             return knowledge_base, query

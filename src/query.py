@@ -1,3 +1,4 @@
+from src.syntax.proposition_symbol import PropositionSymbol
 from src.syntax.sentence import Sentence
 
 
@@ -6,5 +7,5 @@ class Query:
         self.sentence = sentence
 
     @classmethod
-    def from_string(cls, string: str) -> 'Query':
-        return cls(Sentence.from_string(string))
+    def from_string(cls, string: str, dict: dict[str, PropositionSymbol]) -> 'Query':
+        return cls(Sentence.from_string(string, dict))
