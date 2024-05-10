@@ -37,7 +37,7 @@ class ForwardChaining(InferenceAlgorithm):
 
         while len(agenda) > 0:
             # get the first of the agenda as the symbol
-            known_symbol = agenda.pop(0)
+            true_symbol = agenda.pop(0)
 
             # assumes that query sentence is atomic with a single symbol not true or false
             sentence: AtomicSentence = query.sentence
@@ -46,25 +46,25 @@ class ForwardChaining(InferenceAlgorithm):
             atom: Literal = sentence.atom
 
             # add to entailed
-            entailed.add(known_symbol)
+            entailed.add(true_symbol)
 
             # check if the current symbol is the query we are looking for
-            if known_symbol == atom:
+            if true_symbol == atom:
 
                 # we found that q is true
                 return ChainingResult(self.name, True, entailed)
             
             # if we haven't inferred the symbol yet then let's do it
-            if known_symbol not in inferred:
+            if true_symbol not in inferred:
 
                 # add the current symbol to inferred so we don't check it again
-                inferred[known_symbol] = True
+                inferred[true_symbol] = True
 
                 # check each sentence in the knowledge base for the symbol in the body
                 for sentence in knowledge_base.sentences:
 
                     # only check if the symbol is in the sentence
-                    if sentence.symbol_in_sentence(known_symbol):
+                    if sentence.symbol_in_sentence(true_symbol):
 
                         # decrement count[sentence] because we have inferred a symbol
                         count[sentence] -= 1
