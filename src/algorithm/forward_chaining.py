@@ -15,10 +15,7 @@ class ForwardChaining(InferenceAlgorithm):
     # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
     # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
     
-    # NOTE: I'm not sure if the horn query is always a single positive literal, but I'm assuming it is for now
-    # this is something to verify
-
-    # ? Is the query always a single positive literal?
+    # NOTE: Query is always a single positive literal
 
     # NOTE: Because we use a queue and the symbols are ordered by the order thet appear left to right in the string
     # the results may be different from the provided implementation
@@ -40,13 +37,13 @@ class ForwardChaining(InferenceAlgorithm):
             true_symbol = agenda.pop(0)
 
             # assumes that query sentence is atomic with a single symbol not true or false
-            sentence: AtomicSentence = query.sentence
+            query_sentence: AtomicSentence = query.sentence
 
             # get the atom
-            atom: Literal = sentence.atom
+            query_atom: Literal = query_sentence.atom
 
             # check if the current symbol is the query we are looking for
-            if true_symbol == atom:
+            if true_symbol == query_atom:
 
                 # we found that q is true
                 return ChainingResult(self.name, True, entailed)
@@ -81,12 +78,12 @@ class ForwardChaining(InferenceAlgorithm):
                                 # eg. A => B;
 
                                 # get the positive symbol
-                                atom = self.get_positive_symbol(sentence)
+                                query_atom = self.get_positive_symbol(sentence)
 
-                                agenda.append(atom)
+                                agenda.append(query_atom)
 
                                 # we have inferred the conclusion
-                                entailed.append(atom)
+                                entailed.append(query_atom)
 
 
         # we couldn't find it
