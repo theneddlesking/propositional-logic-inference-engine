@@ -127,7 +127,10 @@ class ForwardChaining(InferenceAlgorithm):
                         # increment the count (number of symbols required to infer the conclusion)
                         count[sentence] = count.get(sentence, 0) + 1
             else:
-                # init count to 1
+                # if the sentence is atomic, then we only need 1 symbol to infer the conclusion
+                # eg. A; means we only need A to infer A
+
+                # so we init count to 1
                 count[sentence] = 1
 
         return count
