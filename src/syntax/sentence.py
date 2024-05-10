@@ -1,22 +1,22 @@
 from src.syntax.atom import Atom, BoolAtom
 from src.syntax.operator import Operator
-from src.syntax.proposition_symbol import PropositionSymbol
+from src.syntax.literal import Literal
 from src.syntax.utils import Utils
 
 
 class Sentence:
     
     @classmethod
-    def from_string(cls, string: str, dict: dict[str, PropositionSymbol]) -> 'Sentence':
+    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Sentence':
         # is the string a proposition symbol?
-        if Utils.is_proposition_symbol(string):
+        if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
 
             # get symbol from dict
             symbol = dict.get(string)
 
             if symbol is None:
                 # create new symbol
-                symbol = PropositionSymbol.from_string(string)
+                symbol = Literal.from_string(string)
 
             # add to dict
             dict[symbol.name] = symbol
@@ -30,8 +30,8 @@ class Sentence:
         # otherwise this is a complex sentence
         return Expression.from_string(string, dict)
     
-    # TODO kinda hacky, but it works
-    def symbol_in_sentence(self, symbol: PropositionSymbol) -> bool:
+    # assumes that "A" is in A&B=>C and -A&B=>C
+    def symbol_in_sentence(self, symbol: Literal) -> bool:
         return str(symbol) in str(self)
 
 class AtomicSentence(Sentence):
@@ -53,10 +53,16 @@ class Expression(Sentence):
     
     # TODO verify that this works, not sure
     @classmethod
-    def from_string(cls, string: str, dict: dict[str, PropositionSymbol]) -> 'Expression':
+    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
         # find the operator can be multiple chars long
         operator = None
         for op in Operator:
+
+            # skip negations because the literal handles that
+            if op == Operator.NEGATION:
+                continue
+
+            # we found the operator
             if op.value in string:
                 operator = op
                 break

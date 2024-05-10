@@ -1,10 +1,13 @@
+from src.syntax.operator import Operator
+
+
 class Atom:
-    def __init__(self, name: str, value: str):
+    def __init__(self, name: str, negated = False):
         self.name = name
-        self.value = value
+        self.negated = negated
 
     def __str__(self):
-        return self.name
+        return f"{Operator.NEGATION.value if self.negated else ''}{self.name}"
     
 class BoolAtom(Atom):
     def __init__(self, bool: bool):

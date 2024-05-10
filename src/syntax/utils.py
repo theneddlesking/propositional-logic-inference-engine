@@ -1,6 +1,9 @@
+from src.syntax.operator import Operator
+
+
 class Utils:
     @staticmethod
-    def is_proposition_symbol(string: str) -> bool:
+    def is_propositional_symbol(string: str) -> bool:
         if len(string) == 0:
             return False
 
@@ -21,6 +24,18 @@ class Utils:
                 return False
             
         return True
+    
+    @staticmethod
+    def is_negated_propositional_symbol(string: str) -> bool:
+        if len(string) < 2:
+            return False
+        
+        # doesn't start with negation
+        if string[0] != Operator.NEGATION.value:
+            return False
+        
+        # everything after the negation should be a proposition symbol
+        return Utils.is_propositional_symbol(string[1:])
     
     @staticmethod
     def is_true_false(string: str) -> bool:

@@ -1,9 +1,9 @@
 from src.syntax.sentence import Sentence
-from src.syntax.proposition_symbol import PropositionSymbol
+from src.syntax.literal import Literal
 
 
 class KnowledgeBase:
-    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: dict[str, PropositionSymbol] = None):
+    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: dict[str, Literal] = None):
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else {}
         self.sentences = sentences if sentences is not None else []
 
