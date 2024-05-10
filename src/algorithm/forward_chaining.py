@@ -33,7 +33,7 @@ class ForwardChaining(InferenceAlgorithm):
         agenda: list[Literal]= self.init_agenda(knowledge_base)
 
         # keep track of entailed symbols
-        entailed = set(agenda)
+        entailed = list(agenda)
 
         while len(agenda) > 0:
             # get the first of the agenda as the symbol
@@ -44,9 +44,6 @@ class ForwardChaining(InferenceAlgorithm):
 
             # get the atom
             atom: Literal = sentence.atom
-
-            # add to entailed
-            entailed.add(true_symbol)
 
             # check if the current symbol is the query we are looking for
             if true_symbol == atom:
@@ -86,8 +83,11 @@ class ForwardChaining(InferenceAlgorithm):
                                 # get the positive symbol
                                 atom = self.get_positive_symbol(sentence)
 
-                                # add the symbol to the agenda
                                 agenda.append(atom)
+
+                                # we have inferred the conclusion
+                                entailed.append(atom)
+
 
         # we couldn't find it
         return ChainingResult(self.name, False, inferred)
