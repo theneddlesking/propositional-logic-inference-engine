@@ -6,7 +6,6 @@ from src.result.chaining_result import ChainingResult
 from src.syntax.literal import Literal
 from src.syntax.sentence import AtomicSentence, Expression, Sentence
 
-# TODO implement the ForwardChaining class
 class ForwardChaining(InferenceAlgorithm):
 
     def __init__(self):
