@@ -36,7 +36,7 @@ class Sentence:
         return str(symbol) in str(self)
     
     def evaluate(self, model: Model) -> bool:
-        raise NotImplementedError("evaluate not implemented in Sentence.")
+        raise NotImplementedError("Evaluate sbould be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
