@@ -42,10 +42,10 @@ class ForwardChaining(InferenceAlgorithm):
             
             # we have entailed the consequent
             entailed.add(p)
-
+            
             # we found the wanted symbol
             if wanted == p:
-                return ChainingResult(self.name, True, entailed)
+                return ChainingResult(self.name, True, entailed | set(agenda))
             
             # for every sentence in the kb
             for clause in knowledge_base.rules:
@@ -62,7 +62,7 @@ class ForwardChaining(InferenceAlgorithm):
                         agenda.append(clause.head)
 
         # we couldn't find it
-        return ChainingResult(self.name, False, entailed)
+        return ChainingResult(self.name, False, entailed | set(agenda))
         
     # init count
     def init_count(self, knowledge_base: HornKnowledgeBase) -> dict[Sentence, int]:
