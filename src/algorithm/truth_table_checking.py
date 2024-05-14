@@ -6,7 +6,6 @@ from src.result.chaining_result import ChainingResult
 from src.result.truth_table_checking_result import TruthTableCheckingResult
 from src.syntax.literal import Literal
 
-# TODO implement the TruthTableChecking class
 class TruthTableChecking(InferenceAlgorithm):
     def __init__(self):
         super().__init__("TT")

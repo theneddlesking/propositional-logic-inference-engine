@@ -64,9 +64,7 @@ class Expression(Sentence):
 
     def __str__(self):
         return f"{self.lhs} {self.operator} {self.rhs}"
-    
-    
-    # TODO verify that this works, not sure
+        
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
         # find the operator can be multiple chars long
