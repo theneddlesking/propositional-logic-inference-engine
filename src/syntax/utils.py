@@ -1,6 +1,7 @@
 from src.syntax.operator import Operator
 
 
+# TODO refactor to remove Utils
 class Utils:
     @staticmethod
     def is_propositional_symbol(string: str) -> bool:
