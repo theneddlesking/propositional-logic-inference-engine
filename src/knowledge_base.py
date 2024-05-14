@@ -7,12 +7,13 @@ class KnowledgeBase:
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else {}
         self.sentences = sentences if sentences is not None else []
 
-    @classmethod
-    def get_fact_literals(cls, sentences: list[Sentence], knowledge_base: 'KnowledgeBase') -> list[Literal]:
+    def get_fact_literals(self) -> list[Literal]:
+        sentences = self.sentences
+
         fact_sentences = [sentence for sentence in sentences if isinstance(sentence, AtomicSentence)]
 
         # map to literals
-        fact_literals = [knowledge_base.propositional_symbols[sentence.atom.name] for sentence in fact_sentences]
+        fact_literals = [self.propositional_symbols[sentence.atom.name] for sentence in fact_sentences]
 
         # they can be negated or not (eg. A and ~A are both valid)
         return fact_literals

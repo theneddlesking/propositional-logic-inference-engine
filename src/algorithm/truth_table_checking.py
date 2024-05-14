@@ -18,7 +18,7 @@ class TruthTableChecking(InferenceAlgorithm):
         symbols = list(knowledge_base.propositional_symbols.values())
 
         # get all known facts which we don't need to check again
-        facts = knowledge_base.get_fact_literals(knowledge_base.sentences, knowledge_base)
+        facts = knowledge_base.get_fact_literals()
 
         # get all the symbols that we need to check which aren't in the facts
         unknown_symbols = [symbol for symbol in symbols if symbol not in facts]
