@@ -26,6 +26,8 @@ class BackwardChaining(InferenceAlgorithm):
     def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral]) -> bool:
         # if the goal is already a fact
         if goal in knowledge_base.facts:
+            # we have entailed this known fact
+            entailed.add(goal)
             return True
         
         # check if any rule has the goal as the head
