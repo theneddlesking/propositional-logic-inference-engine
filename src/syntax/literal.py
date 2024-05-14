@@ -5,7 +5,7 @@ from src.syntax.utils import Utils
 class Literal(Atom):
     def __init__(self, symbol: str, negated = False):
         if not Utils.is_propositional_symbol(symbol):
-            raise ValueError(f"{symbol} is not a valid propositional symbol. Should be a capital letter.")
+            raise ValueError(f"{symbol} is not a valid propositional symbol.")
 
         super().__init__(symbol, negated)
        
