@@ -12,7 +12,7 @@ class ForwardChaining(InferenceAlgorithm):
     def __init__(self):
         super().__init__("FC")
 
-    # NOTE: Because we use a queue and the symbols are ordered by the order thet appear left to right in the string
+    # NOTE: Because we use a queue and the symbols are ordered by the order that appear left to right in the string
     # the results may be different from the provided implementation
 
     # ? I'm not sure what ordering they use but maybe it's alphabetical?
@@ -23,7 +23,7 @@ class ForwardChaining(InferenceAlgorithm):
         count = self.init_count(knowledge_base)
 
         # the agenda is a list of symbols that we need to check
-        agenda: list[PositiveLiteral]= list(knowledge_base.facts)
+        agenda: list[PositiveLiteral] = list(knowledge_base.facts)
 
         # wanted result
         wanted = query.positive_literal
