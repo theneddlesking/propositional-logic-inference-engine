@@ -56,10 +56,8 @@ class ForwardChaining(InferenceAlgorithm):
                     # if all the symbols in the body are in the entailed symbols
                     if count[clause] == 0:
 
-                        # we have entailed the head of the sentence
+                        # we have entailed the consequent
                         agenda.append(clause.head)
-
-                        # add the sentence to the entailed symbols
                         entailed.add(clause.head)
 
         # we couldn't find it
