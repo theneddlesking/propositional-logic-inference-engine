@@ -34,6 +34,9 @@ class Sentence:
     # assumes that "A" is in A&B=>C and -A&B=>C
     def symbol_in_sentence(self, symbol: Literal) -> bool:
         return str(symbol) in str(self)
+    
+    def evaluate(self, model: Model) -> bool:
+        raise NotImplementedError("evaluate not implemented in Sentence.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
