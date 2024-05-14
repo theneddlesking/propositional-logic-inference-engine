@@ -10,6 +10,9 @@ class Query:
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Query':
         return cls(Sentence.from_string(string, dict))
     
+
+# NOTE: Query is always a single positive literal
+
 class HornKnowledgeBaseQuery(Query):
     def __init__(self, positive_literal: PositiveLiteral) -> None:
         sentence = AtomicSentence(positive_literal)

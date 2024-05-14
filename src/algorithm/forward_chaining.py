@@ -12,18 +12,13 @@ class ForwardChaining(InferenceAlgorithm):
     def __init__(self):
         super().__init__("FC")
 
-    # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
-    # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
-    
-    # NOTE: Query is always a single positive literal
-
     # NOTE: Because we use a queue and the symbols are ordered by the order thet appear left to right in the string
     # the results may be different from the provided implementation
 
     # ? I'm not sure what ordering they use but maybe it's alphabetical?
     
     # uses horn kb
-    def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> AlgorithmResult:
+    def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> ChainingResult:
         # gets the counts of symbols in the body of each sentence
         count = self.init_count(knowledge_base)
 

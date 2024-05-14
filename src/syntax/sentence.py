@@ -75,6 +75,9 @@ class Expression(Sentence):
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
 
+# Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
+# more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
+
 class HornClause(Expression):
     def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, dict: dict[str, Literal]):
         self.body = body

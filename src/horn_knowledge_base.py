@@ -3,6 +3,8 @@ from src.syntax.literal import PositiveLiteral
 from src.syntax.operator import Operator
 from src.syntax.sentence import AtomicSentence, Expression, HornClause, Sentence
 
+
+
 class HornKnowledgeBase(KnowledgeBase):
 
     def __init__(self, facts: list[PositiveLiteral], rules: list[HornClause], propositional_symbols: dict[str, PositiveLiteral], sentences: list[Sentence]):
