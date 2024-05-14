@@ -35,5 +35,5 @@ class BackwardChaining(InferenceAlgorithm):
             if rule.head == goal:
                 # check if all the symbols in the body are entailed
                 if all([self.backwards_chaining(knowledge_base, symbol, entailed) for symbol in rule.body]):
-                        entailed.add(goal)
-                        return True
+                    entailed.add(goal)
+                    return True
