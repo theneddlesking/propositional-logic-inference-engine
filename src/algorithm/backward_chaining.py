@@ -18,10 +18,7 @@ class BackwardChaining(InferenceAlgorithm):
         # do the backward chaining recursively
         found = self.backwards_chaining(knowledge_base, goal, entailed)
 
-        if found:
-            return ChainingResult(self.name, True, entailed)
-        
-        return ChainingResult(self.name, False, entailed)
+        return ChainingResult(self.name, found, entailed)
 
     def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral]) -> bool:
         # if the goal is already a fact
