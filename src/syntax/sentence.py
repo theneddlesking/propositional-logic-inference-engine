@@ -101,6 +101,11 @@ class Expression(Sentence):
         if self.operator == Operator.IMPLICATION:
             return not self.lhs.evaluate(model) or self.rhs.evaluate(model)
         
+        # A<=>B is equivalent to (A=>B) and (B=>A) according to material equivalence
+        # which is equivalent to (-A or B) and (-B or A) according to material implication
+        if self.operator == Operator.BICONDITIONAL:
+            return (not self.lhs.evaluate(model) or self.rhs.evaluate(model)) and (not self.rhs.evaluate(model) or self.lhs.evaluate(model))
+        
         raise ValueError(f"Operator {self.operator} not supported.")
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
