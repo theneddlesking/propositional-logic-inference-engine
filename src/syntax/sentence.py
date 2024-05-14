@@ -1,3 +1,4 @@
+from src.model import Model
 from src.syntax.atom import Atom, BoolAtom
 from src.syntax.operator import Operator
 from src.syntax.literal import Literal, PositiveLiteral
@@ -41,6 +42,16 @@ class AtomicSentence(Sentence):
 
     def __str__(self):
         return str(self.atom)
+    
+    def evaluate(self, model: Model) -> bool:
+        # handle negation of the atom
+        value_according_model = model.get(self.atom)
+
+        # if the atom is negated, we need to negate the value according to the model
+        if self.atom.negated:
+            return not value_according_model
+    
+        return value_according_model
 
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
@@ -50,6 +61,7 @@ class Expression(Sentence):
 
     def __str__(self):
         return f"{self.lhs} {self.operator} {self.rhs}"
+    
     
     # TODO verify that this works, not sure
     @classmethod
@@ -74,6 +86,19 @@ class Expression(Sentence):
         lhs, rhs = string.split(operator.value, 1)
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
+    
+    def evaluate(self, model: Model) -> bool:
+        if self.operator == Operator.CONJUNCTION:
+            return self.lhs.evaluate(model) and self.rhs.evaluate(model)
+        
+        if self.operator == Operator.DISJUNCTION:
+            return self.lhs.evaluate(model) or self.rhs.evaluate(model)
+        
+        # A=>B is equivalent to -A or B according to material implication
+        if self.operator == Operator.IMPLICATION:
+            return not self.lhs.evaluate(model) or self.rhs.evaluate(model)
+        
+        raise ValueError(f"Operator {self.operator} not supported.")
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
