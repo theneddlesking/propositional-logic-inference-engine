@@ -1,9 +1,10 @@
 from src.algorithm_result import AlgorithmResult
+from src.horn_knowledge_base import HornKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
 from src.knowledge_base import KnowledgeBase
-from src.query import Query
+from src.query import HornKnowledgeBaseQuery, Query
 from src.result.chaining_result import ChainingResult
-from src.syntax.literal import Literal
+from src.syntax.literal import Literal, PositiveLiteral
 from src.syntax.sentence import AtomicSentence, Expression, Sentence
 
 class ForwardChaining(InferenceAlgorithm):
@@ -21,115 +22,57 @@ class ForwardChaining(InferenceAlgorithm):
 
     # ? I'm not sure what ordering they use but maybe it's alphabetical?
     
-    def run(self, knowledge_base: KnowledgeBase, query: Query) -> AlgorithmResult:
+    # uses horn kb
+    def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> AlgorithmResult:
+        # gets the counts of symbols in the body of each sentence
         count = self.init_count(knowledge_base)
-        inferred = {}
 
-        # agenda is the list of symbols that are true
-        agenda: list[Literal]= self.init_agenda(knowledge_base)
+        # the agenda is a list of symbols that we need to check
+        agenda: list[PositiveLiteral]= list(knowledge_base.facts)
 
-        # keep track of entailed symbols
-        entailed = list(agenda)
+        # wanted result
+        wanted = query.positive_literal
 
+        # entailed symbols
+        entailed = set(agenda)
+
+        # while there are symbols in the agenda
         while len(agenda) > 0:
-            # get the first of the agenda as the symbol
-            true_symbol = agenda.pop(0)
+            # get the first symbol in the agenda
+            p = agenda.pop(0)
 
-            # assumes that query sentence is atomic with a single symbol not true or false
-            query_sentence: AtomicSentence = query.sentence
-
-            # get the atom
-            query_atom: Literal = query_sentence.atom
-
-            # check if the current symbol is the query we are looking for
-            if true_symbol == query_atom:
-
-                # we found that q is true
+            # we found the wanted symbol
+            if wanted == p:
                 return ChainingResult(self.name, True, entailed)
-            
-            # if we haven't inferred the symbol yet then let's do it
-            if true_symbol not in inferred:
 
-                # add the current symbol to inferred so we don't check it again
-                inferred[true_symbol] = True
+            # for every sentence in the kb
+            for clause in knowledge_base.rules:
 
-                # check each sentence in the knowledge base for the symbol in the body
-                for sentence in knowledge_base.sentences:
+                # if the symbol is in the body of the sentence
+                if p in clause.body:
+                    # decrement the count of the symbol in the body
+                    count[clause] -= 1
 
-                    # only check if the symbol is in the sentence
-                    if sentence.symbol_in_sentence(true_symbol):
+                    # if all the symbols in the body are in the entailed symbols
+                    if count[clause] == 0:
 
-                        # decrement count[sentence] because we have inferred a symbol
-                        count[sentence] -= 1
+                        # we have entailed the head of the sentence
+                        agenda.append(clause.head)
 
-                        # if we have inferred all the symbols in the sentence, then we can infer the conclusion
-                        if count[sentence] == 0:
-                            # add the conclusion (because it has been inferred)
-
-                            # atomic sentence means that the conclusion is a single symbol
-                            # eg. A;
-                            if isinstance(sentence, AtomicSentence):
-                                # add the symbol to the agenda
-                                agenda.append(sentence.atom)
-
-                            else:
-                                # otherwise, we need to infer the conclusion as the atom of the RHS
-                                # eg. A => B;
-
-                                # get the positive symbol
-                                query_atom = self.get_positive_symbol(sentence)
-
-                                agenda.append(query_atom)
-
-                                # we have inferred the conclusion
-                                entailed.append(query_atom)
-
+                        # add the sentence to the entailed symbols
+                        entailed.add(clause.head)
 
         # we couldn't find it
-        return ChainingResult(self.name, False, inferred)
-    
-    def get_positive_symbol(self, sentence: Expression) -> Literal:
-        # the conclusion is always one symbol on the RHS
-        rhs: AtomicSentence = sentence.rhs
-        return rhs.atom
-
-    # init agenda
-    def init_agenda(self, knowledge_base: KnowledgeBase) -> list[Literal]:
-        agenda = []
-
-        for sentence in knowledge_base.sentences:
-            # if sentence is an atomic sentence
-            if isinstance(sentence, AtomicSentence):
-                # add only the symbol to the agenda
-                agenda.append(sentence.atom)
-
-        return agenda
-    
+        return ChainingResult(self.name, False, entailed)
+        
     # init count
-    def init_count(self, knowledge_base: KnowledgeBase) -> dict[Sentence, int]:
+    def init_count(self, knowledge_base: HornKnowledgeBase) -> dict[Sentence, int]:
+        # dict for sentence to count of symbols in body lookup eg. A & B => C; count = 2
         count = {}
 
-        symbols = knowledge_base.propositional_symbols
-
-        # for every top level sentence, count the number of symbols in the sentence
-        for sentence in knowledge_base.sentences:
-            if isinstance(sentence, Expression):
-                # get lhs eg. A & B => C; lhs = A & B
-                lhs = sentence.lhs
-
-                # checks to see if the symbol is in the LHS of the sentence eg. from A & B check every symbol, A, B, C etc.
-                for symbol in symbols.values():
-
-                    # if it is in the sentence
-                    if lhs.symbol_in_sentence(symbol):
-
-                        # increment the count (number of symbols required to infer the conclusion)
-                        count[sentence] = count.get(sentence, 0) + 1
-            else:
-                # if the sentence is atomic, then we only need 1 symbol to infer the conclusion
-                # eg. A; means we only need A to infer A
-
-                # so we init count to 1
-                count[sentence] = 1
+        # for every clause count the number of symbols in the body
+        for clause in knowledge_base.rules:
+                # add the count to the dict
+                count[clause] = len(clause.body)
 
         return count

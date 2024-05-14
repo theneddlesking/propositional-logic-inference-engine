@@ -17,3 +17,7 @@ class Literal(Atom):
         
         # no negation
         return cls(string, False)
+
+class PositiveLiteral(Literal):
+    def __init__(self, symbol: str):
+        super().__init__(symbol, False)

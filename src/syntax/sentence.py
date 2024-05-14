@@ -1,6 +1,6 @@
 from src.syntax.atom import Atom, BoolAtom
 from src.syntax.operator import Operator
-from src.syntax.literal import Literal
+from src.syntax.literal import Literal, PositiveLiteral
 from src.syntax.utils import Utils
 
 
@@ -74,4 +74,15 @@ class Expression(Sentence):
         lhs, rhs = string.split(operator.value, 1)
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
+
+class HornClause(Expression):
+    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, dict: dict[str, Literal]):
+        self.body = body
+        self.head = head
+
+        lhs = Sentence.from_string("&".join([str(literal) for literal in self.body]), dict)
+        rhs = AtomicSentence(self.head)
+
+        super().__init__(lhs, Operator.IMPLICATION, rhs)
+
     
