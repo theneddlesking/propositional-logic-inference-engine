@@ -51,6 +51,10 @@ class TruthTableChecking(InferenceAlgorithm):
             return merged
 
         # create a model for each permutation
+        # eg. known: { "A": TRUE, "B": TRUE }, unknown: { "C": TRUE/FALSE, "D": TRUE/FALSE }
+        # permutations: [{ "C": TRUE, "D": TRUE }, { "C": TRUE, "D": FALSE }, { "C": FALSE, "D": TRUE }, { "C": FALSE, "D": FALSE }]
+       
+        # merge them eg. { "A": TRUE, "B": TRUE, "C": TRUE, "D": TRUE }
         models = [Model(merge_dicts(known_dict, permutation)) for permutation in permutations]
 
         return models
