@@ -34,3 +34,4 @@ class BackwardChaining(InferenceAlgorithm):
                 if all([self.backwards_chaining(knowledge_base, symbol, entailed) for symbol in rule.body]):
                     entailed.add(goal)
                     return True
+        return False
