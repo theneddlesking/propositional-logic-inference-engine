@@ -10,5 +10,6 @@ class TruthTableChecking(InferenceAlgorithm):
         super().__init__("TT")
 
     def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> ChainingResult:
-        pass
+        # ultimate goal
+        goal = query.positive_literal
     
