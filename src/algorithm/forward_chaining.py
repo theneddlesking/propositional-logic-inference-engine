@@ -29,17 +29,24 @@ class ForwardChaining(InferenceAlgorithm):
         wanted = query.positive_literal
 
         # entailed symbols
-        entailed = set(agenda)
+        entailed = set()
 
         # while there are symbols in the agenda
         while len(agenda) > 0:
             # get the first symbol in the agenda
             p = agenda.pop(0)
 
+            # skip if in entailed
+            if p in entailed:
+                continue
+            
+            # we have entailed the consequent
+            entailed.add(p)
+
             # we found the wanted symbol
             if wanted == p:
                 return ChainingResult(self.name, True, entailed)
-
+            
             # for every sentence in the kb
             for clause in knowledge_base.rules:
 
@@ -50,10 +57,9 @@ class ForwardChaining(InferenceAlgorithm):
 
                     # if all the symbols in the body are in the entailed symbols
                     if count[clause] == 0:
-
-                        # we have entailed the consequent
+                        
+                        # add the head of the sentence to the agenda
                         agenda.append(clause.head)
-                        entailed.add(clause.head)
 
         # we couldn't find it
         return ChainingResult(self.name, False, entailed)
