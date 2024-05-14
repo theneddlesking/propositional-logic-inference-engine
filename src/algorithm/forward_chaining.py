@@ -1,11 +1,9 @@
-from src.algorithm_result import AlgorithmResult
 from src.horn_knowledge_base import HornKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
-from src.knowledge_base import KnowledgeBase
-from src.query import HornKnowledgeBaseQuery, Query
+from src.query import HornKnowledgeBaseQuery
 from src.result.chaining_result import ChainingResult
-from src.syntax.literal import Literal, PositiveLiteral
-from src.syntax.sentence import AtomicSentence, Expression, Sentence
+from src.syntax.literal import PositiveLiteral
+from src.syntax.sentence import Sentence
 
 class ForwardChaining(InferenceAlgorithm):
 
