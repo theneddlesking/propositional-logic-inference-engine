@@ -59,7 +59,7 @@ class TruthTableChecking(InferenceAlgorithm):
         # get the number of unknown symbols
         n = len(unknown)
 
-        # get the number of permutations
+        # get the number of permutations as 2^n because each symbol can be true or false
         num_permutations = 2**n
 
         # get all permutations
