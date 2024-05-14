@@ -10,6 +10,8 @@ class Operator(Enum):
     NEGATION = '~'
     CONJUNCTION = '&'
     DISJUNCTION = '||'
+    OPENING_BRACKET = '('
+    CLOSING_BRACKET = ')'
 
     def __str__(self):
         return self.value

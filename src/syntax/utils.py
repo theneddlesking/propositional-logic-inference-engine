@@ -42,3 +42,27 @@ class Utils:
     def is_true_false(string: str) -> bool:
         return string == "True" or string == "False"
     
+    @staticmethod
+    def find_matching_bracket(string: str, bracket_index: int) -> int:
+        # initialize the index to the leftmost bracket index
+        closing_bracket_index = bracket_index
+
+        # amount of brackets within the string that we encounter
+        inner_bracket_count = 0
+
+        # loop through each character in the string
+        for char in range(bracket_index, len(string)):
+            # keep incrementing the closing bracket index
+            closing_bracket_index += 1
+
+            # if it's a closing bracket, decrement the amount of inner brackets
+            # then check if we found the matching original opening bracket
+            # if it's an opening bracket, increment the amount of inner brackets
+            if char == Operator.CLOSING_BRACKET:
+                if inner_bracket_count == 0:
+                    return closing_bracket_index
+                inner_bracket_count -= 1
+            if char == Operator.OPENING_BRACKET:
+                inner_bracket_count += 1
+        # there either was no closing bracket or no matching one
+        raise ValueError("No corresponding closing bracket found")

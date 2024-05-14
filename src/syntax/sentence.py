@@ -68,6 +68,13 @@ class Expression(Sentence):
     # TODO add bracket ordering
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
+        # get the first bracketed sentence
+        opening_bracket_index = string.find(Operator.OPENING_BRACKET)
+
+        # only if we find brackets
+        if opening_bracket_index != -1:
+            closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+
         # find the operator can be multiple chars long
         operator = None
         for op in Operator:
