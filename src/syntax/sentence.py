@@ -15,7 +15,11 @@ class Sentence:
         # is the string a proposition symbol?
         if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
 
+            # basically we need a base class such that A and ~A both refer to it so that when you say A=TRUE
+            # A is true and ~A is false
+
             print("bro is a symbol", string)
+
             # get symbol from dict
             symbol = dict.get(string)
 
@@ -23,9 +27,10 @@ class Sentence:
                 # create new symbol
                 symbol = Literal.from_string(string)
 
-            # add to dict
-            dict[symbol.name] = symbol
+            # just adds ~A to dict also (kinda good)
+            dict[string] = symbol
 
+            # atomic sentence needs to know if its negated or not
             return AtomicSentence(symbol)
         
         # is the string a boolean value?

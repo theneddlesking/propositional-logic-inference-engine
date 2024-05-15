@@ -27,8 +27,17 @@ class FileParser:
             # second line is the knowledge base
             knowledge_base = KnowledgeBase.from_string(remove_whitespace(lines[1]))
 
+            # print literal
+            print("kb asdbaskjhd")
+            
+
             # fourth line is the query
             query = Query.from_string(remove_whitespace(lines[3]), knowledge_base.propositional_symbols)
+
+            print("kb2 asdbaskjhd")
+
+            for symbol in knowledge_base.propositional_symbols:
+                print(symbol)
 
             # return the knowledge base and query
             return knowledge_base, query
