@@ -8,7 +8,10 @@ class FileParser:
         with open(file_path, 'r') as file:
             # get the lines from the file
             lines = file.readlines()
-            
+
+            def remove_whitespace(s: str) -> str:
+                return s.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "")
+
             # file must have 4 lines
             if len(lines) != 4:
                 raise ValueError('File must have 4 lines')
@@ -22,10 +25,10 @@ class FileParser:
                 raise ValueError('Third line must be "ASK"')
             
             # second line is the knowledge base
-            knowledge_base = KnowledgeBase.from_string(lines[1].strip())
+            knowledge_base = KnowledgeBase.from_string(remove_whitespace(lines[1]))
 
             # fourth line is the query
-            query = Query.from_string(lines[3].strip(), knowledge_base.propositional_symbols)
+            query = Query.from_string(remove_whitespace(lines[3]), knowledge_base.propositional_symbols)
 
             # return the knowledge base and query
             return knowledge_base, query

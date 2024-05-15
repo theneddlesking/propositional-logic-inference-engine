@@ -9,9 +9,13 @@ class Sentence:
     
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Sentence':
+
+        print("bro im checking", string)
+        print(len(string))
         # is the string a proposition symbol?
         if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
 
+            print("bro is a symbol", string)
             # get symbol from dict
             symbol = dict.get(string)
 
