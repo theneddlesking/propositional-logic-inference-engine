@@ -102,7 +102,6 @@ class Expression(Sentence):
         # get operator
         operator = cls.get_operator(string)
             
-        
         # There are 3 bracket cases:
         # 1. (A&B)&C
         # 2. A&(B&C)
@@ -118,7 +117,6 @@ class Expression(Sentence):
         # Therefore, we only need to handle Case 1
 
         # Case 1 is when the first operator is a bracket
-
         
         # if the first operator is a bracket then we need to group that as LHS
         if operator == Operator.OPENING_BRACKET:
@@ -145,12 +143,9 @@ class Expression(Sentence):
             print("split string", string, "into ", lhs, "and", rhs)
 
             return cls(Sentence.from_string(lhs, dict), second_operator, Sentence.from_string(rhs, dict))
-        else:
-            # split the string into lhs and rhs at the first operator only
-            lhs, rhs = string.split(operator.value, 1)
-
-        if operator == Operator.OPENING_BRACKET :
-            print("poggers")
+        
+        # split the string into lhs and rhs at the first operator only
+        lhs, rhs = string.split(operator.value, 1)
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
     
