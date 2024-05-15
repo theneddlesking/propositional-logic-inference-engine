@@ -50,19 +50,26 @@ class Utils:
         # amount of brackets within the string that we encounter
         inner_bracket_count = 0
 
+        print("find, ", string)
+
         # loop through each character in the string
-        for char in range(bracket_index, len(string)):
+        for i in range(bracket_index, len(string)):
             # keep incrementing the closing bracket index
             closing_bracket_index += 1
+
+            char = string[i]
+
+            print(char, inner_bracket_count, closing_bracket_index)
 
             # if it's a closing bracket, decrement the amount of inner brackets
             # then check if we found the matching original opening bracket
             # if it's an opening bracket, increment the amount of inner brackets
-            if char == Operator.CLOSING_BRACKET:
+            if char == Operator.CLOSING_BRACKET.value:
+                inner_bracket_count -= 1
+
                 if inner_bracket_count == 0:
                     return closing_bracket_index
-                inner_bracket_count -= 1
-            if char == Operator.OPENING_BRACKET:
+            if char == Operator.OPENING_BRACKET.value:
                 inner_bracket_count += 1
         # there either was no closing bracket or no matching one
         raise ValueError("No corresponding closing bracket found")

@@ -68,31 +68,70 @@ class Expression(Sentence):
     # TODO add bracket ordering
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
-        # get the first bracketed sentence
-        opening_bracket_index = string.find(Operator.OPENING_BRACKET)
-
-        # only if we find brackets
-        if opening_bracket_index != -1:
-            closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
-
         # find the operator can be multiple chars long
         operator = None
+
+        # we need to find the left most operator
+        # so we need to find the index of the current operator and choose the one with the smallest index
+        index = len(string)
+
+        print("current string", string)
+
         for op in Operator:
 
             # skip negations because the literal handles that
             if op == Operator.NEGATION:
                 continue
 
-            # we found the operator
-            if op.value in string:
+            # take the left most operator
+            if op.value in string and string.index(op.value) < index:
                 operator = op
-                break
+                index = string.index(op.value)
         
         if operator is None:
             raise ValueError(f"Could not find an operator in {string}.")
         
-        # split the string into lhs and rhs at the first operator only
-        lhs, rhs = string.split(operator.value, 1)
+        print("choose operator", operator, "at index", index, "from", string)
+        
+        # There are 3 bracket cases:
+        # 1. (A&B)&C
+        # 2. A&(B&C)
+        # 3. A&(B&C)&D
+
+        # Case 1 we want to group (A&B) as LHS and C as RHS
+        # Case 2 we want to group A as LHS and (B&C) as RHS
+        # Case 3 we want to group A as LHS and (B&C)&D as RHS
+
+        # Case 2 is done by default because it already groups at operator left to right
+        # Case 3 is done by default because it already groups at operator left to right
+
+        # Therefore, we only need to handle Case 1
+
+        # Case 1 is when the first operator is a bracket
+
+        
+        # if the first operator is a bracket then we need to group that as LHS
+        if operator == Operator.OPENING_BRACKET:
+            # get the first bracketed sentence
+            opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
+
+            # only if we find brackets
+            if opening_bracket_index != -1:
+                closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+
+            # split the string into lhs and rhs at the closing bracket and ignore the opening bracket
+            lhs = string[opening_bracket_index + 1:closing_bracket_index-1]
+            rhs = string[closing_bracket_index + 1:]
+
+            # if there is no rhs, then the expression is (A&B)
+
+            if len(rhs) == 0:
+                return cls(Sentence.from_string(lhs, dict), operator, None)
+
+            print("split string", string, "into ", lhs, "and", rhs)
+        else:
+            # split the string into lhs and rhs at the first operator only
+            lhs, rhs = string.split(operator.value, 1)
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
     
