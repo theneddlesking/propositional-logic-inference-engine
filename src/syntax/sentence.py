@@ -66,7 +66,7 @@ class Expression(Sentence):
         return f"({self.lhs} {self.operator} {self.rhs})"
     
     @staticmethod
-    def get_operator_left_operator(string: str, exclude_left_bracket: bool = False):
+    def get_operator(string: str, exclude_left_bracket: bool = False):
         # find the operator can be multiple chars long
         operator = None
 
@@ -100,7 +100,7 @@ class Expression(Sentence):
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
         # get operator
-        operator = cls.get_operator_left_operator(string)
+        operator = cls.get_operator(string)
             
         
         # There are 3 bracket cases:
@@ -140,7 +140,7 @@ class Expression(Sentence):
                 return Sentence.from_string(lhs, dict)
             
             # get the secondary operator because a bracket will have an operator after it
-            second_operator = cls.get_operator_left_operator(string, True)
+            second_operator = cls.get_operator(string, True)
 
             print("split string", string, "into ", lhs, "and", rhs)
 
