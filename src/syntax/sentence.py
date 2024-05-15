@@ -124,9 +124,9 @@ class Expression(Sentence):
             rhs = string[closing_bracket_index + 1:]
 
             # if there is no rhs, then the expression is (A&B)
-
             if len(rhs) == 0:
-                return cls(Sentence.from_string(lhs, dict), operator, None)
+                # so we just take the lhs
+                return Sentence.from_string(lhs, dict)
 
             print("split string", string, "into ", lhs, "and", rhs)
         else:
