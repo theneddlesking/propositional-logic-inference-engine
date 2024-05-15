@@ -43,7 +43,7 @@ class TruthTableChecking(InferenceAlgorithm):
         permutations = self.get_permutations(unknown)
 
         # convert known list to dict
-        known_dict = {symbol: not symbol.negated for symbol in known}
+        known_dict = {symbol.name: not symbol.negated for symbol in known}
 
         def merge_dicts(dict1: dict, dict2: dict) -> dict:
             merged = dict1.copy()  
@@ -59,7 +59,7 @@ class TruthTableChecking(InferenceAlgorithm):
 
         return models
 
-    def get_permutations(self, unknown: list[Literal]) -> list[dict[Literal, bool]]:
+    def get_permutations(self, unknown: list[Literal]) -> list[dict[str, bool]]:
         # get the number of unknown symbols
         n = len(unknown)
 
@@ -71,16 +71,19 @@ class TruthTableChecking(InferenceAlgorithm):
 
         return permutations
     
-    def get_permutation(self, i: int, unknown: list[Literal]) -> dict[Literal, bool]:
+    def get_permutation(self, i: int, unknown: list[Literal]) -> dict[str, bool]:
         # get the binary representation of the number, skip first two characters "0b" eg. "0b1001" -> "1001"
         binary = bin(i)[2:]
 
+        # unknown symbol names
+        unknown_symbol_names = [symbol.name for symbol in unknown]
+
         # pad the binary number with 0s
-        binary = binary.zfill(len(unknown))
+        binary = binary.zfill(len(unknown_symbol_names))
 
         # create the permutation converting the binary string to a dict
         # eg. "1001" and ["A", "B", "C", "D"] -> {"A": True, "B": False, "C": False, "D": True}
-        permutation = {symbol: value == "1" for symbol, value in zip(unknown, binary)}
+        permutation = {symbol: value == "1" for symbol, value in zip(unknown_symbol_names, binary)}
 
         return permutation
     

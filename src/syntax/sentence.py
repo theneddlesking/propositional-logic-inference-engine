@@ -27,8 +27,7 @@ class Sentence:
                 # create new symbol
                 symbol = Literal.from_string(string)
 
-            # just adds ~A to dict also (kinda good)
-            dict[string] = symbol
+            dict[symbol.name] = symbol
 
             # atomic sentence needs to know if its negated or not
             return AtomicSentence(symbol)
@@ -57,7 +56,7 @@ class AtomicSentence(Sentence):
     
     def evaluate(self, model: Model) -> bool:
         # handle negation of the atom
-        value_according_model = model.get(self.atom)
+        value_according_model = model.get(self.atom.name)
 
         # if the atom is negated, we need to negate the value according to the model
         if self.atom.negated:
@@ -172,7 +171,7 @@ class Expression(Sentence):
         # which is equivalent to (-A or B) and (-B or A) according to material implication
         if self.operator == Operator.BICONDITIONAL:
             return (not self.lhs.evaluate(model) or self.rhs.evaluate(model)) and (not self.rhs.evaluate(model) or self.lhs.evaluate(model))
-        
+
         raise ValueError(f"Operator {self.operator} not supported.")
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals

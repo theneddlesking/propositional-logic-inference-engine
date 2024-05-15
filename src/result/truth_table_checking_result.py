@@ -13,6 +13,8 @@ class TruthTableCheckingResult(AlgorithmResult):
         found = "YES" if self.found else "NO"
 
         number_of_models = len(self.models)
+
+        self.print_truth_table()
         
         return f"{found}: {number_of_models}"
 
@@ -22,11 +24,11 @@ class TruthTableCheckingResult(AlgorithmResult):
         
         # determine the maximum width needed for each column
         # minimum of 6 for false ("False " requires 6 characters)
-        col_width = max(6, max(len(symbol.name) for symbol in symbols))
+        col_width = max(6, max(len(symbol) for symbol in symbols))
 
         # print the symbols with adjusted width
         for symbol in symbols:
-            name = symbol.name
+            name = symbol
             print(f"{name: <{col_width}}", end="| ")
 
         print()
