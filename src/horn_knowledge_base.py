@@ -18,6 +18,7 @@ class HornKnowledgeBase(KnowledgeBase):
         rules = []
 
         for sentence in knowledge_base.sentences:
+            # facts
             # convert atomic sentences to positive literals
             if isinstance(sentence, AtomicSentence):
                 # get literal from kb dict
@@ -32,57 +33,13 @@ class HornKnowledgeBase(KnowledgeBase):
 
                 facts.append(literal)
 
+            # rules
             # convert expressions to horn clauses
             if isinstance(sentence, Expression):
-                # check to see if the operator is an implication
-                if sentence.operator != Operator.IMPLICATION:
-                    raise ValueError("HornKnowledgeBase can only contain Horn Clauses (requires =>)", str(sentence))
-                
-                # check to see if the right hand side is an atomic sentence
-                if not isinstance(sentence.rhs, AtomicSentence):
-                    raise ValueError("HornKnowledgeBase can only contain Horn Clauses (requires atomic sentence on the right side)", str(sentence))
-                
-                # recursively check if the left hand side is a conjunction of positive literals
-                def check_conjunction(sentence: Sentence):
-                    if isinstance(sentence, AtomicSentence):
-                        return True
+                # get the rule from the expression
+                rule = HornClause.from_expression(sentence, knowledge_base.propositional_symbols)
 
-                    # must be an expression
-                    sentence: Expression
-
-                    if sentence.operator != Operator.CONJUNCTION:
-                        return False
-                    
-                    return check_conjunction(sentence.lhs) and check_conjunction(sentence.rhs)
-
-                if not check_conjunction(sentence.lhs):
-                    raise ValueError("HornKnowledgeBase can only contain Horn Clauses (requires conjunction of positive literals on the left side)", str(sentence))
-
-                # convert the left hand side to a list of positive literals
-                lhs = []
-                def convert_to_list(sentence: Sentence):
-                    if isinstance(sentence, AtomicSentence):
-                        # get literal from kb dict
-                        literal = knowledge_base.propositional_symbols.get(sentence.atom.name)
-
-                        if literal is None:
-                            raise ValueError(f"Symbol {sentence.atom.name} not found in propositional symbols", str(sentence))
-
-                        # must be a positive literal
-                        if literal.negated:
-                            raise ValueError(f"Symbol {sentence.atom.name} must be a positive literal", str(sentence))
-                        
-                        lhs.append(literal)
-                        return
-
-                    sentence: Expression
-                    convert_to_list(sentence.lhs)
-                    convert_to_list(sentence.rhs)
-
-                # converts the left hand side to a list of positive literals as lhs
-                convert_to_list(sentence.lhs)
-
-                rules.append(HornClause(lhs, sentence.rhs.atom, knowledge_base.propositional_symbols))
+                rules.append(rule)
 
         return cls(facts, rules, knowledge_base.propositional_symbols, knowledge_base.sentences)
 

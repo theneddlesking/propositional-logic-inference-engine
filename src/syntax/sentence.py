@@ -182,5 +182,41 @@ class HornClause(Expression):
         rhs = AtomicSentence(self.head)
 
         super().__init__(lhs, Operator.IMPLICATION, rhs)
-
+        
+    @staticmethod
+    def get_symbols(sentence: Expression, body: list[PositiveLiteral]) -> list[PositiveLiteral]:
+        # add lhs
+        if isinstance(sentence.lhs, AtomicSentence):
+            # check if its a positive literal
+            if sentence.lhs.atom.negated:
+                raise ValueError(f"Body of Horn clause must be positive literals only.", str(sentence)) 
     
+            body.append(sentence.lhs.atom)
+        
+        # add rhs
+        if isinstance(sentence.rhs, AtomicSentence):
+            # check if its a positive literal
+            if sentence.lhs.atom.negated:
+                raise ValueError(f"Body of Horn clause must be positive literals only.", str(sentence)) 
+            
+            body.append(sentence.rhs.atom)
+        else:
+            HornClause.get_symbols(sentence.rhs, body)
+        
+        return body
+
+    @classmethod
+    def from_expression(cls, sentence: Expression, dict: dict[str, Literal]) -> 'HornClause':
+        # get symbols
+        all_symbols = cls.get_symbols(sentence, [])
+
+        # get head
+        head = all_symbols.pop()
+
+        # get body
+        body = all_symbols
+
+        return cls(body, head, dict)
+    
+    def __str__(self):
+        return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
