@@ -64,10 +64,9 @@ class Expression(Sentence):
 
     def __str__(self):
         return f"({self.lhs} {self.operator} {self.rhs})"
-        
-    # TODO add bracket ordering
-    @classmethod
-    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
+    
+    @staticmethod
+    def get_operator_left_operator(string: str, exclude_left_bracket: bool = False):
         # find the operator can be multiple chars long
         operator = None
 
@@ -83,6 +82,10 @@ class Expression(Sentence):
             if op == Operator.NEGATION:
                 continue
 
+            # skip bracket if asked
+            if exclude_left_bracket and op == Operator.OPENING_BRACKET:
+                continue
+
             # take the left most operator
             if op.value in string and string.index(op.value) < index:
                 operator = op
@@ -91,7 +94,14 @@ class Expression(Sentence):
         if operator is None:
             raise ValueError(f"Could not find an operator in {string}.")
         
-        print("choose operator", operator, "at index", index, "from", string)
+        return operator
+        
+    # TODO add bracket ordering
+    @classmethod
+    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
+        # get operator
+        operator = cls.get_operator_left_operator(string)
+            
         
         # There are 3 bracket cases:
         # 1. (A&B)&C
@@ -128,11 +138,19 @@ class Expression(Sentence):
                 print(lhs, "moment")
                 # so we just take the lhs
                 return Sentence.from_string(lhs, dict)
+            
+            # get the secondary operator because a bracket will have an operator after it
+            second_operator = cls.get_operator_left_operator(string, True)
 
             print("split string", string, "into ", lhs, "and", rhs)
+
+            return cls(Sentence.from_string(lhs, dict), second_operator, Sentence.from_string(rhs, dict))
         else:
             # split the string into lhs and rhs at the first operator only
             lhs, rhs = string.split(operator.value, 1)
+
+        if operator == Operator.OPENING_BRACKET :
+            print("poggers")
         
         return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
     
