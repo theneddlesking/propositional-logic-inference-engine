@@ -63,7 +63,7 @@ class Expression(Sentence):
         self.rhs = rhs
 
     def __str__(self):
-        return f"{self.lhs} {self.operator} {self.rhs}"
+        return f"({self.lhs} {self.operator} {self.rhs})"
         
     # TODO add bracket ordering
     @classmethod
@@ -125,6 +125,7 @@ class Expression(Sentence):
 
             # if there is no rhs, then the expression is (A&B)
             if len(rhs) == 0:
+                print(lhs, "moment")
                 # so we just take the lhs
                 return Sentence.from_string(lhs, dict)
 
