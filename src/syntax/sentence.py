@@ -184,7 +184,20 @@ class HornClause(Expression):
         super().__init__(lhs, Operator.IMPLICATION, rhs)
         
     @staticmethod
-    def get_symbols(sentence: Expression, body: list[PositiveLiteral]) -> list[PositiveLiteral]:
+    def get_symbols(sentence: Sentence, body: list[PositiveLiteral]) -> list[PositiveLiteral]:
+        # if sentence is expression make sure operator is conjunction or implication
+        if isinstance(sentence, Expression):
+            # if it is the last sentence
+            last_sentence = isinstance(sentence.rhs, AtomicSentence)
+
+            # then the last sentence needs to be implication
+            if not last_sentence and sentence.operator != Operator.CONJUNCTION:
+                raise ValueError(f"Body of Horn clause must be conjunctions only.", str(sentence))
+            
+            # else it has to be a conjunction
+            if last_sentence and sentence.operator != Operator.IMPLICATION:
+                raise ValueError(f"Head of Horn clause must be implication only.", str(sentence))
+
         # add lhs
         if isinstance(sentence.lhs, AtomicSentence):
             # check if its a positive literal
