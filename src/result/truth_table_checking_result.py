@@ -20,7 +20,7 @@ class TruthTableCheckingResult(AlgorithmResult):
 
     def print_truth_table(self):
         # get all the symbols
-        symbols: list[Literal] = list(self.models[0].values.keys())
+        symbols: list[str] = list(self.models[0].values.keys())
         
         # determine the maximum width needed for each column
         # minimum of 6 for false ("False " requires 6 characters)
@@ -28,8 +28,7 @@ class TruthTableCheckingResult(AlgorithmResult):
 
         # print the symbols with adjusted width
         for symbol in symbols:
-            name = symbol
-            print(f"{name: <{col_width}}", end="| ")
+            print(f"{symbol: <{col_width}}", end="| ")
 
         print()
 
