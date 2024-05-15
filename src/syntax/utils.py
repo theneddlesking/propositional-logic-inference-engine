@@ -28,9 +28,6 @@ class Utils:
     
     @staticmethod
     def is_negated_propositional_symbol(string: str) -> bool:
-        if len(string) < 2:
-            return False
-        
         # doesn't start with negation
         if string[0] != Operator.NEGATION.value:
             return False
