@@ -1,12 +1,10 @@
 (c => ~d)
 
-(~c || ~d)
+~c || ~d
 
-~(~c || ~d)
+~(c & d)
+all but c=T, d=T
 
-c & d
+but c=T is given as a fact
 
-so overall
-a <=> c & d
-
-so if a=T, then so is c=T, d=T
+so only model is c=T, d=F
