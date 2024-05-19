@@ -7,7 +7,7 @@ class Query:
         self.sentence = sentence
 
     @classmethod
-    def from_string(cls, string: str, known_symbols: set[str]) -> 'Query':
+    def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Query':
         return cls(Sentence.from_string(string, known_symbols))
     
 

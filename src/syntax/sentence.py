@@ -8,20 +8,13 @@ from src.syntax.utils import Utils
 class Sentence:
     
     @classmethod
-    def from_string(cls, string: str, known_symbols: set[str]) -> 'Sentence':
+    def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Sentence':
         # is the string a proposition symbol?
         if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
-            # get symbol from set
-            symbol = known_symbols.get(string)
-
-            if symbol is None:
-                # create new symbol
-                symbol = Literal.from_string(string)
-
-            known_symbols[symbol.name] = symbol
+            known_symbols.add(Literal.from_string(string))
 
             # atomic sentence needs to know if its negated or not
-            return AtomicSentence(symbol)
+            return AtomicSentence(Literal.from_string(string))
         
         # is the string a boolean value?
         if Utils.is_true_false(string):
@@ -90,7 +83,7 @@ class Expression(Sentence):
         return operator
         
     @classmethod
-    def from_string(cls, string: str, known_symbols: set[str]) -> 'Expression':
+    def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Expression':
         # get operator
         operator = cls.get_operator(string)
             
@@ -166,7 +159,7 @@ class Expression(Sentence):
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
 
 class HornClause(Expression):
-    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, known_symbols: set[str]):
+    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, known_symbols: set[Literal]):
         self.body = body
         self.head = head
 
@@ -211,7 +204,7 @@ class HornClause(Expression):
         return body
 
     @classmethod
-    def from_expression(cls, sentence: Expression, known_symbols: set[str]) -> 'HornClause':
+    def from_expression(cls, sentence: Expression, known_symbols: set[Literal]) -> 'HornClause':
         # get symbols
         all_symbols = cls.get_symbols(sentence, [])
 

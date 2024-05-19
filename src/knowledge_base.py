@@ -3,7 +3,7 @@ from src.syntax.literal import Literal
 
 
 class KnowledgeBase:
-    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: set[str] = None):
+    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: set[Literal] = None):
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else set()
         self.sentences = sentences if sentences is not None else []
 
@@ -13,14 +13,14 @@ class KnowledgeBase:
         fact_sentences = [sentence for sentence in sentences if isinstance(sentence, AtomicSentence)]
 
         # map to literals
-        fact_literals = [self.propositional_symbols[sentence.atom.name] for sentence in fact_sentences]
+        fact_literals = [sentence.atom for sentence in fact_sentences]
 
         # they can be negated or not (eg. A and ~A are both valid)
         return fact_literals
 
     @classmethod
     def from_string(cls, string: str) -> 'KnowledgeBase':
-        propositional_symbols = {}
+        propositional_symbols = set()
         
         # remove all spaces in the string
         string = string.replace(" ", "")

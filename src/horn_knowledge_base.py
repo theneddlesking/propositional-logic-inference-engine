@@ -1,5 +1,5 @@
 from src.knowledge_base import KnowledgeBase
-from src.syntax.literal import PositiveLiteral
+from src.syntax.literal import PositiveLiteral, Literal
 from src.syntax.operator import Operator
 from src.syntax.sentence import AtomicSentence, Expression, HornClause, Sentence
 
@@ -7,7 +7,7 @@ from src.syntax.sentence import AtomicSentence, Expression, HornClause, Sentence
 
 class HornKnowledgeBase(KnowledgeBase):
 
-    def __init__(self, facts: list[PositiveLiteral], rules: list[HornClause], propositional_symbols: set[str], sentences: list[Sentence]):
+    def __init__(self, facts: list[PositiveLiteral], rules: list[HornClause], propositional_symbols: set[Literal], sentences: list[Sentence]):
         self.facts: list[PositiveLiteral] = facts
         self.rules = rules
         super().__init__(sentences, propositional_symbols)
@@ -22,7 +22,7 @@ class HornKnowledgeBase(KnowledgeBase):
             # convert atomic sentences to positive literals
             if isinstance(sentence, AtomicSentence):
                 # get literal from kb set
-                literal = knowledge_base.propositional_symbols.get(sentence.atom.name)
+                literal = sentence.atom
 
                 if literal is None:
                     raise ValueError(f"Symbol {sentence.atom.name} not found in propositional symbols", str(sentence))

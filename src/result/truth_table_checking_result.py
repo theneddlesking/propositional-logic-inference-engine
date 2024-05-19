@@ -20,6 +20,10 @@ class TruthTableCheckingResult(AlgorithmResult):
 
     def print_truth_table(self):
         # get all the symbols
+        if len(self.models) == 0:
+            print("There were no suitable models found")
+            return
+
         symbols: list[str] = list(self.models[0].values.keys())
         
         # determine the maximum width needed for each column
