@@ -47,16 +47,12 @@ class Utils:
         # amount of brackets within the string that we encounter
         inner_bracket_count = 0
 
-        print("find, ", string)
-
         # loop through each character in the string
         for i in range(bracket_index, len(string)):
             # keep incrementing the closing bracket index
             closing_bracket_index += 1
 
             char = string[i]
-
-            print(char, inner_bracket_count, closing_bracket_index)
 
             # if it's a closing bracket, decrement the amount of inner brackets
             # then check if we found the matching original opening bracket

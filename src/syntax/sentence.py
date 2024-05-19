@@ -9,16 +9,11 @@ class Sentence:
     
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Sentence':
-
-        print("bro im checking", string)
-        print(len(string))
         # is the string a proposition symbol?
         if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
 
             # basically we need a base class such that A and ~A both refer to it so that when you say A=TRUE
             # A is true and ~A is false
-
-            print("bro is a symbol", string)
 
             # get symbol from dict
             symbol = dict.get(string)
@@ -82,8 +77,6 @@ class Expression(Sentence):
         # so we need to find the index of the current operator and choose the one with the smallest index
         index = len(string)
 
-        print("current string", string)
-
         for op in Operator:
 
             # skip negations because the literal handles that
@@ -136,7 +129,6 @@ class Expression(Sentence):
 
             # if there is no rhs, then the expression is (A&B)
             if len(rhs) == 0:
-                print(lhs, "moment")
                 # so we just take the lhs
                 return Sentence.from_string(lhs, dict)
             
@@ -145,8 +137,6 @@ class Expression(Sentence):
 
             # convert to operator
             second_operator = Operator(operator)
-
-            print("split string", string, "into ", lhs, "and", rhs)
 
             return cls(Sentence.from_string(lhs, dict), second_operator, Sentence.from_string(rhs, dict))
         
