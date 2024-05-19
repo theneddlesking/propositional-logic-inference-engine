@@ -4,6 +4,7 @@ from src.syntax.operator import Operator
 from src.syntax.literal import Literal, PositiveLiteral
 from src.syntax.utils import Utils
 
+# TODO parse negations correctly only negates literals not expressions
 
 class Sentence:
     
