@@ -1,0 +1,12 @@
+(c => ~d)
+
+(~c || ~d)
+
+~(~c || ~d)
+
+c & d
+
+so overall
+a <=> c & d
+
+so if a=T, then so is c=T, d=T

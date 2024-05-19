@@ -25,7 +25,10 @@ class TruthTableCheckingResult(AlgorithmResult):
             return
 
         symbols: list[str] = list(self.models[0].values.keys())
-        
+
+        # order alphabetically
+        symbols.sort()
+
         # determine the maximum width needed for each column
         # minimum of 6 for false ("False " requires 6 characters)
         col_width = max(6, max(len(symbol) for symbol in symbols))
