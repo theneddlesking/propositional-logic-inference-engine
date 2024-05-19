@@ -4,7 +4,7 @@ from src.syntax.literal import Literal
 
 class KnowledgeBase:
     def __init__(self, sentences: list[Sentence] = None, propositional_symbols: set[str] = None):
-        self.propositional_symbols = propositional_symbols if propositional_symbols is not None else {}
+        self.propositional_symbols = propositional_symbols if propositional_symbols is not None else set()
         self.sentences = sentences if sentences is not None else []
 
     def get_fact_literals(self) -> list[Literal]:
