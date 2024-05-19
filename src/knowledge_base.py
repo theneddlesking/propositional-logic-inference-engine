@@ -3,7 +3,7 @@ from src.syntax.literal import Literal
 
 
 class KnowledgeBase:
-    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: dict[str, Literal] = None):
+    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: set[str] = None):
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else {}
         self.sentences = sentences if sentences is not None else []
 
@@ -34,14 +34,14 @@ class KnowledgeBase:
         # remove any empty strings
         sentences = [sentence for sentence in sentences if sentence != ""]
 
-        # get the actual sentences and update the propositional symbols dictionary
+        # get the actual sentences and update the propositional symbols set
         sentences = [Sentence.from_string(sentence, propositional_symbols) for sentence in sentences]
 
         return cls(sentences, propositional_symbols)
     
     def __str__(self):
 
-        symbols = "\n".join([str(symbol) for symbol in self.propositional_symbols.values()])
+        symbols = "\n".join([str(symbol) for symbol in self.propositional_symbols])
 
         sentences = "\n".join([str(sentence) for sentence in self.sentences])
 

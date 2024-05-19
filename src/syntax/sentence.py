@@ -8,21 +8,17 @@ from src.syntax.utils import Utils
 class Sentence:
     
     @classmethod
-    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Sentence':
+    def from_string(cls, string: str, known_symbols: set[str]) -> 'Sentence':
         # is the string a proposition symbol?
         if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
-
-            # basically we need a base class such that A and ~A both refer to it so that when you say A=TRUE
-            # A is true and ~A is false
-
-            # get symbol from dict
-            symbol = dict.get(string)
+            # get symbol from set
+            symbol = known_symbols.get(string)
 
             if symbol is None:
                 # create new symbol
                 symbol = Literal.from_string(string)
 
-            dict[symbol.name] = symbol
+            known_symbols[symbol.name] = symbol
 
             # atomic sentence needs to know if its negated or not
             return AtomicSentence(symbol)
@@ -32,7 +28,7 @@ class Sentence:
             return AtomicSentence(BoolAtom.from_string(string))
 
         # otherwise this is a complex sentence
-        return Expression.from_string(string, dict)
+        return Expression.from_string(string, known_symbols)
     
     # assumes that "A" is in A&B=>C and -A&B=>C
     def symbol_in_sentence(self, symbol: Literal) -> bool:
@@ -94,7 +90,7 @@ class Expression(Sentence):
         return operator
         
     @classmethod
-    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
+    def from_string(cls, string: str, known_symbols: set[str]) -> 'Expression':
         # get operator
         operator = cls.get_operator(string)
             
@@ -130,7 +126,7 @@ class Expression(Sentence):
             # if there is no rhs, then the expression is (A&B)
             if len(rhs) == 0:
                 # so we just take the lhs
-                return Sentence.from_string(lhs, dict)
+                return Sentence.from_string(lhs, known_symbols)
             
              # between lhs and rhs there is an operator
             operator = string[closing_bracket_index]
@@ -138,14 +134,17 @@ class Expression(Sentence):
             # convert to operator
             second_operator = Operator(operator)
 
-            return cls(Sentence.from_string(lhs, dict), second_operator, Sentence.from_string(rhs, dict))
+            return cls(Sentence.from_string(lhs, known_symbols), second_operator, Sentence.from_string(rhs, known_symbols))
         
         # split the string into lhs and rhs at the first operator only
         lhs, rhs = string.split(operator.value, 1)
         
-        return cls(Sentence.from_string(lhs, dict), operator, Sentence.from_string(rhs, dict))
+        return cls(Sentence.from_string(lhs, known_symbols), operator, Sentence.from_string(rhs, known_symbols))
     
     def evaluate(self, model: Model) -> bool:
+        if self.operator == Operator.NEGATION:
+            return not self.lhs.evaluate(model)
+
         if self.operator == Operator.CONJUNCTION:
             return self.lhs.evaluate(model) and self.rhs.evaluate(model)
         
@@ -167,11 +166,11 @@ class Expression(Sentence):
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
 
 class HornClause(Expression):
-    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, dict: dict[str, Literal]):
+    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, known_symbols: set[str]):
         self.body = body
         self.head = head
 
-        lhs = Sentence.from_string("&".join([str(literal) for literal in self.body]), dict)
+        lhs = Sentence.from_string("&".join([str(literal) for literal in self.body]), known_symbols)
         rhs = AtomicSentence(self.head)
 
         super().__init__(lhs, Operator.IMPLICATION, rhs)
@@ -212,7 +211,7 @@ class HornClause(Expression):
         return body
 
     @classmethod
-    def from_expression(cls, sentence: Expression, dict: dict[str, Literal]) -> 'HornClause':
+    def from_expression(cls, sentence: Expression, known_symbols: set[str]) -> 'HornClause':
         # get symbols
         all_symbols = cls.get_symbols(sentence, [])
 
@@ -222,7 +221,7 @@ class HornClause(Expression):
         # get body
         body = all_symbols
 
-        return cls(body, head, dict)
+        return cls(body, head, known_symbols)
     
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"

@@ -7,8 +7,8 @@ class Query:
         self.sentence = sentence
 
     @classmethod
-    def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Query':
-        return cls(Sentence.from_string(string, dict))
+    def from_string(cls, string: str, known_symbols: set[str]) -> 'Query':
+        return cls(Sentence.from_string(string, known_symbols))
     
 
 # NOTE: Query is always a single positive literal

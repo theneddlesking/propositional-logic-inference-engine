@@ -15,7 +15,7 @@ class TruthTableChecking(InferenceAlgorithm):
         query_sentence = query.sentence
 
         # get all the symbols in the kb
-        symbols = list(knowledge_base.propositional_symbols.values())
+        symbols = list(knowledge_base.propositional_symbols)
 
         # get all known facts which we don't need to check again
         facts = knowledge_base.get_fact_literals()
@@ -71,19 +71,16 @@ class TruthTableChecking(InferenceAlgorithm):
 
         return permutations
     
-    def get_permutation(self, i: int, unknown: list[Literal]) -> dict[str, bool]:
+    def get_permutation(self, i: int, unknown_symbols: list[Literal]) -> dict[str, bool]:
         # get the binary representation of the number, skip first two characters "0b" eg. "0b1001" -> "1001"
         binary = bin(i)[2:]
 
-        # unknown symbol names
-        unknown_symbol_names = [symbol.name for symbol in unknown]
-
         # pad the binary number with 0s
-        binary = binary.zfill(len(unknown_symbol_names))
+        binary = binary.zfill(len(unknown_symbols))
 
         # create the permutation converting the binary string to a dict
         # eg. "1001" and ["A", "B", "C", "D"] -> {"A": True, "B": False, "C": False, "D": True}
-        permutation = {symbol: value == "1" for symbol, value in zip(unknown_symbol_names, binary)}
+        permutation = {symbol: value == "1" for symbol, value in zip(unknown_symbols, binary)}
 
         return permutation
     

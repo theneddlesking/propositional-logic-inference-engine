@@ -7,7 +7,7 @@ from src.syntax.sentence import AtomicSentence, Expression, HornClause, Sentence
 
 class HornKnowledgeBase(KnowledgeBase):
 
-    def __init__(self, facts: list[PositiveLiteral], rules: list[HornClause], propositional_symbols: dict[str, PositiveLiteral], sentences: list[Sentence]):
+    def __init__(self, facts: list[PositiveLiteral], rules: list[HornClause], propositional_symbols: set[str], sentences: list[Sentence]):
         self.facts: list[PositiveLiteral] = facts
         self.rules = rules
         super().__init__(sentences, propositional_symbols)
@@ -21,7 +21,7 @@ class HornKnowledgeBase(KnowledgeBase):
             # facts
             # convert atomic sentences to positive literals
             if isinstance(sentence, AtomicSentence):
-                # get literal from kb dict
+                # get literal from kb set
                 literal = knowledge_base.propositional_symbols.get(sentence.atom.name)
 
                 if literal is None:
