@@ -23,9 +23,8 @@ class Sentence:
         # otherwise this is a complex sentence
         return Expression.from_string(string, known_symbols)
     
-    # assumes that "A" is in A&B=>C and -A&B=>C
-    def symbol_in_sentence(self, symbol: Literal) -> bool:
-        return str(symbol) in str(self)
+    def get_symbols(self) -> set[Literal]:
+        raise NotImplementedError("Get symbols should be implemented in subclasses.")
     
     def evaluate(self, model: Model) -> bool:
         raise NotImplementedError("Evaluate sbould be implemented in subclasses.")
@@ -47,6 +46,9 @@ class AtomicSentence(Sentence):
             return not value_according_model
     
         return value_according_model
+    
+    def get_symbols(self) -> set[Literal]:
+        return set([self.atom])
 
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
@@ -154,6 +156,9 @@ class Expression(Sentence):
             return (not self.lhs.evaluate(model) or self.rhs.evaluate(model)) and (not self.rhs.evaluate(model) or self.lhs.evaluate(model))
 
         raise ValueError(f"Operator {self.operator} not supported.")
+    
+    def get_symbols(self) -> set[Literal]:
+        return self.lhs.get_symbols().union(self.rhs.get_symbols())
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause

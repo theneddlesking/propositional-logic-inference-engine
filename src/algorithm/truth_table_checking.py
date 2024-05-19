@@ -15,10 +15,23 @@ class TruthTableChecking(InferenceAlgorithm):
         query_sentence = query.sentence
 
         # get all the symbols in the kb
-        symbols = list(knowledge_base.propositional_symbols)
+        symbols = list(knowledge_base.propositional_symbols_excluding_query)
 
         # get all known facts which we don't need to check again
         facts = knowledge_base.get_fact_literals()
+
+        # get query symbols
+        query_symbols = query_sentence.get_symbols()
+
+        # names
+        query_symbol_names = [symbol.name for symbol in query_symbols]
+
+        # symbols names
+        symbol_names = [symbol.name for symbol in symbols]
+
+        # query can only be valid if the kb could possibly entail it
+        if any([symbol_name not in symbol_names for symbol_name in query_symbol_names]):
+            return TruthTableCheckingResult([], False)
 
         # get all the symbols that we need to check which aren't in the facts
         unknown_symbols = [symbol for symbol in symbols if symbol not in facts]

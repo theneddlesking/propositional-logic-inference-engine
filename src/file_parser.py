@@ -26,7 +26,6 @@ class FileParser:
             
             # second line is the knowledge base
             knowledge_base = KnowledgeBase.from_string(remove_whitespace(lines[1]))
-            
 
             # fourth line is the query
             query = Query.from_string(remove_whitespace(lines[3]), knowledge_base.propositional_symbols)

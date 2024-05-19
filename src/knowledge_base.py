@@ -7,6 +7,9 @@ class KnowledgeBase:
         self.propositional_symbols = propositional_symbols if propositional_symbols is not None else set()
         self.sentences = sentences if sentences is not None else []
 
+        # make a copy of the symbols set without the query because it is mutable
+        self.propositional_symbols_excluding_query = set(self.propositional_symbols)
+
     def get_fact_literals(self) -> list[Literal]:
         sentences = self.sentences
 
