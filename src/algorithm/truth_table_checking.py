@@ -23,6 +23,12 @@ class TruthTableChecking(InferenceAlgorithm):
         # get all the symbols that we need to check which aren't in the facts
         unknown_symbols = [symbol for symbol in symbols if symbol not in facts]
 
+        # make them positive literals for creating the model
+        unknown_symbols = [Literal(symbol.name, False) for symbol in unknown_symbols]
+
+        # get unique so there are no needless duplicates
+        unknown_symbols = list(set(unknown_symbols))
+
         # find all possible models regardless of whether they are valid or not
         unvalidated_models = self.find_all_models(unknown_symbols, facts)
 
