@@ -100,7 +100,6 @@ class Expression(Sentence):
         
         return operator
         
-    # TODO add bracket ordering
     @classmethod
     def from_string(cls, string: str, dict: dict[str, Literal]) -> 'Expression':
         # get operator
