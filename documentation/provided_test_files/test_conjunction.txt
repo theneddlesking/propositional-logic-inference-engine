@@ -2,3 +2,11 @@ TELL
 (a => (c || d)) & b;
 ASK
 a
+
+Conjunction Literal Always True
+Checks if an undefined conjunction literal is always true. (b should always be true)
+YES: 3
+a     | b     | c     | d     |
+True  | True  | False | True  |
+True  | True  | True  | False |
+True  | True  | True  | True  |

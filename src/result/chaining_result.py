@@ -8,7 +8,6 @@ class ChainingResult(AlgorithmResult):
         self.entailed = entailed
 
     def __str__(self) -> str:
-
         # list of symbols that are entailed
         entailed_symbols = [str(symbol) for symbol in self.entailed]
 

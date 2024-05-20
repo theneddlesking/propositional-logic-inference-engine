@@ -2,7 +2,10 @@
 # You can think of it as the row of a typical truth table
 # where all the literals are assigned either true or false
 class Model():
-    def __init__(self, values: list[dict[str, bool]]):
+    def __init__(self, values: dict[str, bool]):
+        # sort the keys alphabetically
+        values = dict(sorted(values.items()))        
+
         self.values = values
 
     def __str__(self) -> str:
@@ -18,3 +21,6 @@ class Model():
     
     def get(self, symbol: str) -> bool:
         return self.values[symbol]
+    
+    def __eq__(self, other: 'Model') -> bool:
+        return self.values == other.values

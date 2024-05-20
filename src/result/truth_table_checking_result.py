@@ -6,6 +6,7 @@ class TruthTableCheckingResult(AlgorithmResult):
     def __init__(self, models: list[Model], found: bool):
         super().__init__("TT")
         self.found = found
+
         self.models = models
 
     def __str__(self) -> str:
@@ -50,8 +51,22 @@ class TruthTableCheckingResult(AlgorithmResult):
     def __eq__(self, other: 'TruthTableCheckingResult') -> bool:
         # there is some randomness in the order of the models because it depends on hashing
 
-        # so we need to convert to a set to compare accurately
-        set_self = set(self.models)
-        set_other = set(other.models)
+        print("expect")
+        for model in self.models:
+            print(model.values)
 
-        return self.found == other.found and set_self == set_other
+        print("actual")
+        for model in other.models:
+            print(model.values)
+
+        # but the models can be in any order
+        # so we need to check if the values are the same
+        for model in self.models:
+            has_same = model in other.models
+
+            if not has_same:
+                print("wtf")
+                return False
+
+        # found and length of models is same
+        return self.found == other.found and len(self.models) == len(other.models)

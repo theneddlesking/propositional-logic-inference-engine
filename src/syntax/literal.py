@@ -11,9 +11,15 @@ class Literal(Atom):
 
     def __eq__(self, other: 'Literal'):
         return self.name == other.name and self.negated == other.negated
+    
+    def __lt__(self, other: 'Literal'):
+        return self.name < other.name
 
     def __hash__(self):
         return hash((self.name, self.negated))
+    
+    def __str__(self):
+        return f"{Operator.NEGATION.value if self.negated else ''}{self.name}"
        
     @classmethod
     def from_string(cls, string: str) -> 'Literal':    
