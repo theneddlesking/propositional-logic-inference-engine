@@ -8,3 +8,6 @@ class TestResult(AlgorithmResult):
     # dummy test result that just says the test algorithm ran correctly
     def __str__(self) -> str:
         return "The test algorithm ran correctly, and a result was created."
+    
+    def __eq__(self, other: 'TestResult') -> bool:
+        return True

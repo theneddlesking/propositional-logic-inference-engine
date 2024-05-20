@@ -2,7 +2,7 @@ from src.algorithm_result import AlgorithmResult
 from src.syntax.literal import Literal
 
 class ChainingResult(AlgorithmResult):
-    def __init__(self, algorithm_name: str, found: bool, entailed: list[Literal]):
+    def __init__(self, algorithm_name: str, found: bool, entailed: set[Literal]):
         super().__init__(algorithm_name)
         self.found = found
         self.entailed = entailed
@@ -19,3 +19,6 @@ class ChainingResult(AlgorithmResult):
         found = "YES" if self.found else "NO"
 
         return f"{found}: {symbols_str}"
+
+    def __eq__(self, other: 'ChainingResult') -> bool:
+        return self.found == other.found and self.entailed == other.entailed

@@ -46,3 +46,12 @@ class TruthTableCheckingResult(AlgorithmResult):
                 value_str = str(value)
                 print(f"{value_str: <{col_width}}", end="| ")
             print()
+
+    def __eq__(self, other: 'TruthTableCheckingResult') -> bool:
+        # there is some randomness in the order of the models because it depends on hashing
+
+        # so we need to convert to a set to compare accurately
+        set_self = set(self.models)
+        set_other = set(other.models)
+
+        return self.found == other.found and set_self == set_other
