@@ -24,3 +24,6 @@ class Model():
     
     def __eq__(self, other: 'Model') -> bool:
         return self.values == other.values
+    
+    def __lt__(self, other: 'Model') -> bool:
+        return str(self) < str(other)

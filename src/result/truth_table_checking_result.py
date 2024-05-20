@@ -7,7 +7,11 @@ class TruthTableCheckingResult(AlgorithmResult):
         super().__init__("TT")
         self.found = found
 
+        # sort
+        models.sort()
+
         self.models = models
+
 
     def __str__(self) -> str:
         # yes or no
@@ -48,16 +52,5 @@ class TruthTableCheckingResult(AlgorithmResult):
                 print(f"{value_str: <{col_width}}", end="| ")
             print()
 
-    def __eq__(self, other: 'TruthTableCheckingResult') -> bool:
-        # there is some randomness in the order of the models because it depends on hashing
-
-        # but the models can be in any order
-        # so we need to check if the values are the same
-        for model in self.models:
-            has_same = model in other.models
-
-            if not has_same:
-                return False
-
-        # found and length of models is same
-        return self.found == other.found and len(self.models) == len(other.models)
+    def __eq__(self, other: 'TruthTableCheckingResult') -> bool: 
+        return self.found == other.found and self.models == other.models
