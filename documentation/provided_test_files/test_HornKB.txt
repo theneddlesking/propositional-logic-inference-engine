@@ -6,3 +6,4 @@ d
 Standard Horn KB
 Just a standard horn KB
 YES: d, p2, p1, c, a, b, p3
+YES: d, p3, p2, p1

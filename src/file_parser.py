@@ -65,7 +65,7 @@ class FileParser:
             return FileType.STANDARD
         
         # horn kb test file
-        if number_of_lines == 8:
+        if number_of_lines == 9:
             return FileType.CHAINING_TEST
         
         # general kb test file
@@ -73,6 +73,10 @@ class FileParser:
         
     @staticmethod
     def parse_test(file_path: str, file_type: FileType, algorithm_name: str) -> tuple[AlgorithmResult, str, str]:
+        # can't use horn kb for anything other than FC or BC
+        if algorithm_name != "FC" and algorithm_name != "BC" and file_type == FileType.CHAINING_TEST:
+            raise ValueError('Chaining test file can only be used with FC or BC')
+
         with open(file_path, 'r') as file:
             # get the lines from the file
             lines = file.readlines()
@@ -83,8 +87,11 @@ class FileParser:
             # get description
             description = lines[6].strip()
 
-            # result line
-            result_line = lines[7].strip()
+            # result line is line 8 if FC or generic
+            # but is line 9 if BC
+            line_number = 9 if algorithm_name == "BC" else 8
+
+            result_line = lines[line_number - 1].strip()
 
             # line needs YES: or NO: in it
             if result_line.find("YES: ") == -1 and result_line.find("NO: ") == -1:
