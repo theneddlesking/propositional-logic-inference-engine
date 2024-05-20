@@ -51,21 +51,12 @@ class TruthTableCheckingResult(AlgorithmResult):
     def __eq__(self, other: 'TruthTableCheckingResult') -> bool:
         # there is some randomness in the order of the models because it depends on hashing
 
-        print("expect")
-        for model in self.models:
-            print(model.values)
-
-        print("actual")
-        for model in other.models:
-            print(model.values)
-
         # but the models can be in any order
         # so we need to check if the values are the same
         for model in self.models:
             has_same = model in other.models
 
             if not has_same:
-                print("wtf")
                 return False
 
         # found and length of models is same

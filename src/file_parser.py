@@ -134,9 +134,6 @@ class FileParser:
                 # get the symbols without any spaces
                 symbols = line_to_arr(lines[8])
 
-                print("symbols")
-                print(symbols)
-
                 # get the values
                 model_value_arrs = [line_to_arr(line) for line in lines[9:]]
 

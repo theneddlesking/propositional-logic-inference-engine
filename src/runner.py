@@ -31,8 +31,6 @@ class Runner:
         # validate the file is correct
         file_type = FileParser.get_file_type(file_path)
 
-        print(file_type)
-
         # check that it is a test file
         if file_type != FileType.CHAINING_TEST and file_type != FileType.TRUTH_TABLE_CHECKING_TEST:
             raise ValueError("File is not a test file")
