@@ -5,6 +5,14 @@ class ChainingResult(AlgorithmResult):
     def __init__(self, algorithm_name: str, found: bool, entailed: set[Literal]):
         super().__init__(algorithm_name)
         self.found = found
+
+        # order the symbols
+        entailed = list(entailed)
+
+        entailed.sort()
+
+        entailed = set(entailed)
+
         self.entailed = entailed
 
     def __str__(self) -> str:
