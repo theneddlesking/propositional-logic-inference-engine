@@ -1,0 +1,8 @@
+TELL
+~(a & b); b;
+ASK
+a
+
+Generic KB With Negated Sentence
+Checks a generic KB comprehends the negated sentence
+NO: 0
