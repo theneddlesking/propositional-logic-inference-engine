@@ -37,7 +37,7 @@ class Sentence:
     def convert_implications(self) -> 'Sentence':
         raise NotImplementedError("Converting implications should be implemented in subclasses.")
     
-    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> 'Sentence':
+    def remove_double_negations(self) -> 'Sentence':
         raise NotImplementedError("Removing double negations should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
@@ -70,21 +70,7 @@ class AtomicSentence(Sentence):
     def convert_implications(self) -> Sentence:
         return self
 
-    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
-
-        # if the parent is a negation then we need to remove the double negation
-
-        # and grandparent is like (B & ~(~A))
-        # eg. parent is ~(~A)
-
-        # then you want grandparent to be (B & A)
-        if parent.operator == Operator.NEGATION and self.atom.negated:
-            grandparent.rhs = AtomicSentence(Atom(self.atom.name, False))
-            
-            # if operator is None then it was one of the first sentences
-            if grandparent.operator is None:
-                grandparent.operator = "REBIND"
-
+    def remove_double_negations(self) -> Sentence:
         return self
 
 class Expression(Sentence):
@@ -262,14 +248,13 @@ class Expression(Sentence):
         sentence = self.convert_biconditionals()
         print("CONVERT BICONDITIONALS")
         print(sentence)
+
         sentence = sentence.convert_implications()
         print("CONVERT IMPLICATIONS")
         print(sentence)
-
  
         # remove double negations
-        sentence = sentence.remove_double_negations(None, None)
-
+        sentence = sentence.remove_double_negations()
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
 
@@ -322,35 +307,44 @@ class Expression(Sentence):
         # also group the sentences
         pass
 
-    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
-        # base case for first sentence
-        if grandparent is None and parent is None:
-            grandparent = Expression(None, None, None)
-            parent = Expression(None, None, grandparent)
+    def remove_double_negations(self) -> Sentence:
+        # if we are negated
+        negated = self.operator == Operator.NEGATION
 
-        if self.operator != Operator.NEGATION:
-            # recurse on lhs
-            self.lhs = self.lhs.remove_double_negations(parent, self)
-        elif parent is not None and parent.operator == Operator.NEGATION:
-            if isinstance(self.rhs, Expression):
-                parent.lhs = self.rhs.lhs
-                parent.operator = self.rhs.operator
-                parent.rhs = self.rhs.rhs
-            else:
-                grandparent.rhs = self.rhs
+        # not negated so we can just recurse
+        if not negated:
+            self.lhs = self.lhs.remove_double_negations()
+            self.rhs = self.rhs.remove_double_negations()
+            return self
 
-                # if operator is None then it was one of the first sentences
-                if grandparent.operator is None:
-                    grandparent.operator = "REBIND"
+        # if we are negated then we need to check if the rhs is negated
+        if isinstance(self.rhs, Expression):
+            # negated expression
+            rhs_negated = self.rhs.operator == Operator.NEGATION
 
-        # recurse on rhs
-        self.rhs = self.rhs.remove_double_negations(parent, self)
+            # double negation
+            if rhs_negated:
 
-         # re map if parent is not None
-        if parent.operator == "REBIND":
-            self = parent.rhs
+                # recurse rhs
+                child = self.rhs.rhs.remove_double_negations()
 
-        return self
+                return child
+            
+            # child is not negated so we can just recurse
+            self.rhs = self.rhs.remove_double_negations()
+            return self
+        else:
+            # negated atom
+            self.rhs: AtomicSentence
+            rhs_negated = self.rhs.atom.negated
+
+            # double negation
+            if rhs_negated:
+                return AtomicSentence(Atom(self.rhs.atom.name, False))
+            
+            # not double negation
+            return self
+
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
         pass
