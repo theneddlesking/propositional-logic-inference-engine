@@ -28,7 +28,10 @@ class Sentence:
         raise NotImplementedError("Get symbols should be implemented in subclasses.")
     
     def evaluate(self, model: Model) -> bool:
-        raise NotImplementedError("Evaluate sbould be implemented in subclasses.")
+        raise NotImplementedError("Evaluate should be implemented in subclasses.")
+    
+    def get_cnf(self) -> 'Sentence':
+        raise NotImplementedError("Converting to CNF should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -50,6 +53,9 @@ class AtomicSentence(Sentence):
     
     def get_symbols(self) -> set[Literal]:
         return set([self.atom])
+    
+    def get_cnf(self) -> Sentence:
+        return self
 
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
@@ -169,6 +175,29 @@ class Expression(Sentence):
     
     def get_symbols(self) -> set[Literal]:
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
+    
+    def get_cnf(self) -> Sentence:
+        # eliminate biconditionals and implications
+        # replace A <=> B with (A => B) & (B => A)
+        # replace A => B with ~A || B
+
+        # move negations inward (negation normal form)
+        # apply de morgan's laws
+        # ~(A & B) === ~A || ~B
+        # ~(A || B) === ~A & ~B
+        # eliminate double negations
+        # ~(~A) === A
+
+        # distribute disjunctions over conjunctions
+        # apply the distributive law to move disjunctions inside conjunctions
+        # A || (B & C) === (A || B) & (A || C)
+
+        # end cnf form should be something like this
+        # (A || ~B || ~C) & (~D || E || F || D || F)
+        # (A || B) & (C)
+        # (A || B)
+        # (A)
+        return super().get_cnf()
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause

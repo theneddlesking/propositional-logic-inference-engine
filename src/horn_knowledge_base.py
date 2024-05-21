@@ -1,9 +1,6 @@
 from src.knowledge_base import KnowledgeBase
 from src.syntax.literal import PositiveLiteral, Literal
-from src.syntax.operator import Operator
 from src.syntax.sentence import AtomicSentence, Expression, HornClause, Sentence
-
-
 
 class HornKnowledgeBase(KnowledgeBase):
 
