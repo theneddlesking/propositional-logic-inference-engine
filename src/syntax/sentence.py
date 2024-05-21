@@ -33,6 +33,12 @@ class Sentence:
     
     def convert_biconditionals(self) -> 'Sentence':
         raise NotImplementedError("Converting biconditionals should be implemented in subclasses.")
+    
+    def convert_implications(self) -> 'Sentence':
+        raise NotImplementedError("Converting implications should be implemented in subclasses.")
+    
+    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> 'Sentence':
+        raise NotImplementedError("Removing double negations should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -59,6 +65,12 @@ class AtomicSentence(Sentence):
         return self
     
     def convert_biconditionals(self) -> Sentence:
+        return self
+    
+    def convert_implications(self) -> Sentence:
+        return self
+
+    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
         return self
 
 class Expression(Sentence):
@@ -228,12 +240,21 @@ class Expression(Sentence):
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
     def get_cnf(self) -> Sentence:
+        # TODO: add types
         # eliminate biconditionals and implications
         # replace A <=> B with (A => B) & (B => A)
         # replace A => B with ~A || B
         sentence = self.convert_biconditionals()
+        print("STEP 1")
         print(sentence)
-        sentence = self.convert_implications()
+        sentence = sentence.convert_implications()
+        print("STEP 2")
+        print(sentence)
+        if sentence.lhs is not None:
+            sentence.lhs.remove_double_negations(None, sentence)
+        sentence.rhs.remove_double_negations(None, sentence)
+        print("REMOVE DOUBLE NEGATION")
+        print(sentence)
 
         # move negations inward (negation normal form)
         # apply de morgan's laws
@@ -241,13 +262,12 @@ class Expression(Sentence):
         # ~(A || B) === ~A & ~B
         # eliminate double negations
         # ~(~A) === A
-        sentence = self.apply_de_morgans_laws()
-        sentence = self.remove_double_negations()
+        sentence = sentence.apply_de_morgans_laws()
 
         # distribute disjunctions over conjunctions
         # apply the distributive law to move disjunctions inside conjunctions
         # A || (B & C) === (A || B) & (A || C)
-        sentence = self.distribute_conjuctions_over_disjunctions()
+        sentence = sentence.distribute_conjuctions_over_disjunctions()
         return sentence
     
     def convert_biconditionals(self) -> Sentence:
@@ -267,14 +287,40 @@ class Expression(Sentence):
         return self
 
     def convert_implications(self) -> Sentence:
-        pass
+        # negation expression doesn't have a lhs
+        if self.operator != Operator.NEGATION:
+            self.lhs = self.lhs.convert_implications()
+        self.rhs = self.rhs.convert_implications()
+
+        # this isn't an infinite loop, the atomic sentence has the base case
+        if self.operator == Operator.IMPLICATION:
+            # split the implication using the following rule:
+            # A => B === ~A || B
+            not_lhs = Expression(None, Operator.NEGATION, self.lhs)
+            return Expression(not_lhs, Operator.DISJUNCTION, self.rhs)
+    
+        return self
 
     def apply_de_morgans_laws(self) -> Sentence:
         # also group the sentences
         pass
 
-    def remove_double_negations(self) -> Sentence:
-        pass
+    def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
+        if self.operator != Operator.NEGATION:
+            self.lhs = self.lhs.remove_double_negations(parent, self)
+        elif parent is not None and parent.operator == Operator.NEGATION:
+            if isinstance(self.rhs, Expression):
+                parent.lhs = self.rhs.lhs
+                parent.operator = self.rhs.operator
+                parent.rhs = self.rhs.rhs
+            else:
+                print(parent)
+                grandparent.rhs = self.rhs
+                
+
+        self.rhs = self.rhs.remove_double_negations(parent, self)
+
+        return self
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
         pass
