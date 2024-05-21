@@ -27,7 +27,7 @@ class TruthTableCheckingResult(AlgorithmResult):
         # get all the symbols
         if len(self.models) == 0:
             string += "There were no suitable models found to print the table"
-            return
+            return string
 
         symbols: list[str] = list(self.models[0].values.keys())
 

@@ -1,0 +1,8 @@
+TELL
+(a => b) => (c || d); c; ~e;
+ASK
+e
+
+Generic KB Does Not Include Query Literal But Includes It's Negation
+A generic KB where the query is a positive literal and only its negated form is found
+NO: 0
