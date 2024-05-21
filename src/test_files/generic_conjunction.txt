@@ -4,7 +4,7 @@ ASK
 a
 
 Conjunction Literal Always True
-Checks if an undefined conjunction literal is always true. (b should always be true)
+Checks if an undefined conjunction literal is always true
 YES: 3
 a     | b     | c     | d     |
 True  | True  | False | True  |
