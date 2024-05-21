@@ -387,22 +387,27 @@ class Expression(Sentence):
         return self
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
-        # A || (B & C) -> (A || B) & (A || C)
-        # (B & C) || A -> (A || B) & (A || C)
-        # (A & B) || (C & D) -> (A & B || C) & (A & B || D) -> ((A || C) & (B || C)) & ((A || D) & (B || D))
-        # (A || (B & (C || D))) -> (A || B) & (A || (C || D))
-        # A & (B || (C & (D || E))) -> A & (B || C) & (B || (D || E))
-        # A & (B & (C || D) & E) -> A & B & (C || D) & E
-        # (A || B) || (C & D) -> (A || B || C) & (A || B || D)
-        # detect the disjunction
-        # only care if it is outside the two surrounding expressions
-
-        # if we disjunction into a sentence that conjunctionafise two new sentences
-        # its gg (we need to distribute jerry)
+        # we want to distribute the disjunction over the conjunction where the conjunction is the inner expression
         if self.operator == Operator.DISJUNCTION:
+            # grab the lhs and rhs
             lhs = self.lhs
             rhs = self.rhs
+
+            # we need to distribute over the inner and outer side
+            # we can't distribute over atomic sentences
             if not (isinstance(lhs, AtomicSentence) and isinstance(rhs, AtomicSentence)):
+
+                # there are 3 other cases:
+                # A || (B & C)
+                # (A & B) || C
+                # (A & B) || (C & D)
+
+                # in case 3 we can choose to distribute over the lhs or rhs
+                # so we just choose rhs as inner
+
+                # so case 2 and 3 we make inner lhs
+                # case 1 we make inner rhs
+
                 if isinstance(rhs, AtomicSentence) or (isinstance(lhs, Expression) and isinstance(rhs, Expression) and rhs.operator == Operator.DISJUNCTION):
                     inner = lhs
                     outer = rhs
