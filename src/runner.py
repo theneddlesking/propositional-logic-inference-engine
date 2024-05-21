@@ -27,7 +27,7 @@ class Runner:
         return algorithm.run(knowledge_base, query)
                 
     @staticmethod
-    def run_test_from_file_path(algorithm: InferenceAlgorithm, file_path: str) -> bool:
+    def run_test_from_file_path(algorithm: InferenceAlgorithm, file_path: str) -> UnitTestResult:
         # validate the file is correct
         file_type = FileParser.get_file_type(file_path)
 

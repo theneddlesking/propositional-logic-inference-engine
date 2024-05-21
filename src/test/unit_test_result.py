@@ -8,5 +8,6 @@ class UnitTestResult:
         self.passed = expect == actual
 
     def __str__(self):
-        return f"{self.name} - {self.passed}\n{self.description}\nExpected: {self.expect.debug()}\nActual: {self.actual.debug()}\n"
+        passed_str = "PASSED" if self.passed else "FAILED"
+        return f"{self.name} - {passed_str}\n{self.description}\nExpected: {self.expect.debug()}\nActual: {self.actual.debug()}\n"
     

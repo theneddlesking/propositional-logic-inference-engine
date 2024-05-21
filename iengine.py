@@ -25,8 +25,13 @@ def main():
         # run the test
         result = Runner.run_test_from_file_path(inference_algorithm, file_path)
 
-        # print the result
-        print(result)
+        # print the result in green if passed, red if failed
+        
+        if result.passed:
+            print(f"\033[92m{result}\033[0m")
+        else:
+            print(f"\033[91m{result}\033[0m")
+            
         return
 
     # run the algorithm
