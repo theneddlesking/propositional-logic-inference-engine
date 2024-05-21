@@ -319,32 +319,25 @@ class Expression(Sentence):
 
         # if we are negated then we need to check if the rhs is negated
         if isinstance(self.rhs, Expression):
-            # negated expression
-            rhs_negated = self.rhs.operator == Operator.NEGATION
 
             # double negation
-            if rhs_negated:
-
+            if self.rhs.operator == Operator.NEGATION:
                 # recurse rhs
-                child = self.rhs.rhs.remove_double_negations()
-
-                return child
-            
+                return self.rhs.rhs.remove_double_negations()
+                        
             # child is not negated so we can just recurse
             self.rhs = self.rhs.remove_double_negations()
             return self
-        else:
-            # negated atom
-            self.rhs: AtomicSentence
-            rhs_negated = self.rhs.atom.negated
+        
+        # negated atom
+        self.rhs: AtomicSentence
 
-            # double negation
-            if rhs_negated:
-                return AtomicSentence(Atom(self.rhs.atom.name, False))
-            
-            # not double negation
-            return self
-
+        # double negation
+        if self.rhs.atom.negated:
+            return AtomicSentence(Atom(self.rhs.atom.name, False))
+        
+        # not double negation
+        return self
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
         pass
