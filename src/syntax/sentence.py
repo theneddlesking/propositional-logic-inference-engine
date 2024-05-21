@@ -91,16 +91,20 @@ class Expression(Sentence):
         # get operator
         operator = cls.get_operator(string)
 
-        # if its a negation check if the next character is a bracket
+        # if its a negation check if the next character is a bracket because it could be a negated sentence
         if operator == Operator.NEGATION:
             negation_index = string.find(Operator.NEGATION.value)
 
             negation_length = len(Operator.NEGATION.value)
+
             next_char_is_bracket = string[negation_index + negation_length] == Operator.OPENING_BRACKET.value
 
+            # negated literal
             if not next_char_is_bracket:
-                # if its not a bracket then we need to find the next operator
+                # if its not a bracket then we need to find the next operator because the negation is only for the next literal
                 operator = cls.get_operator(string[(negation_index + negation_length):])
+
+            # negated sentence
             else:
                 # we need to negate this sentence
                 return cls(Sentence.from_string(string[(negation_index + negation_length):], known_symbols), Operator.NEGATION, None)
