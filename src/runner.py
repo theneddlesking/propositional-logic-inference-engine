@@ -25,6 +25,7 @@ class Runner:
             query = HornKnowledgeBaseQuery(positive_literal)
         elif algorithm.name == 'DPLL':
             # convert to cnf kb
+            print("KB:")
             print(knowledge_base)
             knowledge_base = CNFKnowledgeBase.from_generic_knowledge_base(knowledge_base)
 

@@ -71,6 +71,20 @@ class AtomicSentence(Sentence):
         return self
 
     def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
+
+        # if the parent is a negation then we need to remove the double negation
+
+        # and grandparent is like (B & ~(~A))
+        # eg. parent is ~(~A)
+
+        # then you want grandparent to be (B & A)
+        if parent.operator == Operator.NEGATION and self.atom.negated:
+            grandparent.rhs = AtomicSentence(Atom(self.atom.name, False))
+            
+            # if operator is None then it was one of the first sentences
+            if grandparent.operator is None:
+                grandparent.operator = "REBIND"
+
         return self
 
 class Expression(Sentence):
@@ -244,15 +258,20 @@ class Expression(Sentence):
         # eliminate biconditionals and implications
         # replace A <=> B with (A => B) & (B => A)
         # replace A => B with ~A || B
+
         sentence = self.convert_biconditionals()
-        print("STEP 1")
+        print("CONVERT BICONDITIONALS")
         print(sentence)
         sentence = sentence.convert_implications()
-        print("STEP 2")
+        print("CONVERT IMPLICATIONS")
         print(sentence)
-        if sentence.lhs is not None:
-            sentence.lhs.remove_double_negations(None, sentence)
-        sentence.rhs.remove_double_negations(None, sentence)
+
+        grandparent = Expression(None, None, None)
+        parent = Expression(None, None, grandparent)
+
+        # remove double negations
+        sentence = sentence.remove_double_negations(grandparent, parent)
+
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
 
@@ -262,12 +281,12 @@ class Expression(Sentence):
         # ~(A || B) === ~A & ~B
         # eliminate double negations
         # ~(~A) === A
-        sentence = sentence.apply_de_morgans_laws()
+        # sentence = sentence.apply_de_morgans_laws()
 
         # distribute disjunctions over conjunctions
         # apply the distributive law to move disjunctions inside conjunctions
         # A || (B & C) === (A || B) & (A || C)
-        sentence = sentence.distribute_conjuctions_over_disjunctions()
+        # sentence = sentence.distribute_conjuctions_over_disjunctions()
         return sentence
     
     def convert_biconditionals(self) -> Sentence:
@@ -306,7 +325,13 @@ class Expression(Sentence):
         pass
 
     def remove_double_negations(self, grandparent: 'Expression', parent: 'Expression') -> Sentence:
+        # base case for first sentence
+        if grandparent is None and parent is None:
+            grandparent = Expression(None, None, None)
+            parent = Expression(None, None, grandparent)
+
         if self.operator != Operator.NEGATION:
+            # recurse on lhs
             self.lhs = self.lhs.remove_double_negations(parent, self)
         elif parent is not None and parent.operator == Operator.NEGATION:
             if isinstance(self.rhs, Expression):
@@ -314,11 +339,18 @@ class Expression(Sentence):
                 parent.operator = self.rhs.operator
                 parent.rhs = self.rhs.rhs
             else:
-                print(parent)
                 grandparent.rhs = self.rhs
-                
 
+                # if operator is None then it was one of the first sentences
+                if grandparent.operator is None:
+                    grandparent.operator = "REBIND"
+
+        # recurse on rhs
         self.rhs = self.rhs.remove_double_negations(parent, self)
+
+         # re map if parent is not None
+        if parent.operator == "REBIND":
+            self = parent.rhs
 
         return self
 

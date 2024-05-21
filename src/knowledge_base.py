@@ -47,4 +47,4 @@ class KnowledgeBase:
     
     def __str__(self):
         sentences = "\n".join([str(sentence) for sentence in self.sentences])
-        return f"\n{sentences}"
+        return f"{sentences}"
