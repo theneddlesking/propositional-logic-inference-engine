@@ -10,6 +10,9 @@ class Query:
     def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Query':
         return cls(Sentence.from_string(string, known_symbols))
     
+    def __str__(self) -> str:
+        return str(self.sentence)
+    
 
 # NOTE: Query is always a single positive literal
 

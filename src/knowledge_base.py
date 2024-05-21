@@ -42,10 +42,9 @@ class KnowledgeBase:
 
         return cls(sentences, propositional_symbols)
     
+    def get_symbol_str(self) -> str:
+        return "\n".join([str(symbol) for symbol in self.propositional_symbols])
+    
     def __str__(self):
-
-        symbols = "\n".join([str(symbol) for symbol in self.propositional_symbols])
-
         sentences = "\n".join([str(sentence) for sentence in self.sentences])
-
-        return f"Symbols:\n{symbols}\nSentences:\n{sentences}"
+        return f"\n{sentences}"
