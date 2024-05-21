@@ -1,0 +1,9 @@
+TELL
+a&c=>b;d;c;
+ASK
+b
+
+Standard Horn KB With No Solution
+A standard horn KB where there is no valid solution 
+NO: c, d
+NO: c
