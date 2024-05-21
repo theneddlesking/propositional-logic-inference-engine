@@ -45,6 +45,9 @@ class Sentence:
     
     def distribute_conjuctions_over_disjunctions(self) -> 'Sentence':
         raise NotImplementedError("Distributing conjunctions over disjunctions should be implemented in subclasses.")
+    
+    def convert_negated_sentence_to_negated_literal(self) -> 'Sentence':
+        raise NotImplementedError("Converted negated sentences should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -83,6 +86,9 @@ class AtomicSentence(Sentence):
         return self
     
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
+        return self
+    
+    def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         return self
     
 class Expression(Sentence):
@@ -272,6 +278,10 @@ class Expression(Sentence):
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
 
+        sentence = sentence.convert_negated_sentence_to_negated_literal()
+        print("CONVERT NEGATED SENTENCES TO NEGATED LITERALS")
+        print(sentence)
+
         sentence = sentence.distribute_conjuctions_over_disjunctions()
         print("DISTRIBUTE CONJUNCTIONS OVER DISJUNCTIONS")
         print(sentence)
@@ -378,8 +388,22 @@ class Expression(Sentence):
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
         # A || (B & C) -> (A || B) & (A || C)
+        # (B & C) || A -> (A || B) & (A || C)
+        # (A & B) || (C & D) -> (A & B || C) & (A & B || D) -> ((A || C) & (B || C)) & ((A || D) & (B || D))
+        # (A || (B & (C || D))) -> (A || B) & (A || (C || D))
+
         
         pass
+
+    def convert_negated_sentence_to_negated_literal(self) -> Sentence:
+        # convert to a negated atomic sentence
+        if self.operator == Operator.NEGATION:
+            return AtomicSentence(Atom(self.rhs, True))
+        
+        # recurse
+        self.lhs = self.lhs.convert_negated_sentence_to_negated_literal()
+        self.rhs = self.rhs.convert_negated_sentence_to_negated_literal()
+        return self
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
