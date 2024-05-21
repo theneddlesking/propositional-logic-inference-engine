@@ -125,7 +125,9 @@ class Expression(Sentence):
                 if len(operator_substring) == 0:
                     # so we just take the lhs
                     # index is 2 because we need to skip over negation and opening bracket
-                    return Sentence.from_string(string[2:-1], known_symbols)
+                    negated_sentence = Sentence.from_string(string[2:-1], known_symbols)
+
+                    return Expression(None, Operator.NEGATION, negated_sentence)
                 
                 # get the next operator after the closing bracket
                 second_operator = cls.get_operator(operator_substring)
