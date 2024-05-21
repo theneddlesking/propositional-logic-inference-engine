@@ -252,10 +252,6 @@ class Expression(Sentence):
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
     def get_cnf(self) -> Sentence:
-        # eliminate biconditionals and implications
-        # replace A <=> B with (A => B) & (B => A)
-        # replace A => B with ~A || B
-
         sentence = self.convert_biconditionals()
         print("CONVERT BICONDITIONALS")
         print(sentence)
@@ -276,18 +272,9 @@ class Expression(Sentence):
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
 
-        # move negations inward (negation normal form)
-        # apply de morgan's laws
-        # ~(A & B) === ~A || ~B
-        # ~(A || B) === ~A & ~B
-        # eliminate double negations
-        # ~(~A) === A
-        # sentence = sentence.apply_de_morgans_laws()
-
-        # distribute disjunctions over conjunctions
-        # apply the distributive law to move disjunctions inside conjunctions
-        # A || (B & C) === (A || B) & (A || C)
-        # sentence = sentence.distribute_conjuctions_over_disjunctions()
+        sentence = sentence.distribute_conjuctions_over_disjunctions()
+        print("DISTRIBUTE CONJUNCTIONS OVER DISJUNCTIONS")
+        print(sentence)
         return sentence
     
     def convert_biconditionals(self) -> Sentence:
@@ -390,6 +377,8 @@ class Expression(Sentence):
         return self
 
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
+        # A || (B & C) -> (A || B) & (A || C)
+        
         pass
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
