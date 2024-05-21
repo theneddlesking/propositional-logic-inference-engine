@@ -1,0 +1,8 @@
+TELL
+(a <=> (c => ~d)) & b & (b => a); c; ~f || g;
+ASK
+d
+
+Generic KB With No Solution
+This is a standard generic KB with no solution to check that it handles this case correctly
+NO: 0

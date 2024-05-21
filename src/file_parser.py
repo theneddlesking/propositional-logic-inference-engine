@@ -93,6 +93,11 @@ class FileParser:
 
             result_line = lines[line_number - 1].strip()
 
+            # if colon is last character then there are no symbols which could be possible
+            if result_line[-1] == ":":
+                # the space gets trimmed off so we need to add it back for the split
+                result_line += " "
+
             # line needs YES: or NO: in it
             if result_line.find("YES: ") == -1 and result_line.find("NO: ") == -1:
                 raise ValueError('Expected result line must contain "YES" or "NO"')
@@ -107,6 +112,9 @@ class FileParser:
             if file_type == FileType.CHAINING_TEST:
                 # get the set of symbols
                 entailed = set(split[1].split(", "))
+
+                # remove any empty strings
+                entailed = {symbol for symbol in entailed if symbol != ""}
 
                 # convert to literals
                 entailed = {Literal(symbol) for symbol in entailed}

@@ -1,0 +1,8 @@
+TELL
+(a => b) => (c || d); c; 
+ASK
+e
+
+Generic KB Does Not Include Query Symbol
+A generic KB where the query is a single symbol that is not found in any of the sentences
+NO: 0

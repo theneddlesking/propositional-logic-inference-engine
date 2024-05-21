@@ -116,8 +116,12 @@ class Expression(Sentence):
                 closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
 
             # split the string into lhs and rhs at the closing bracket and ignore the opening bracket
-            lhs = string[opening_bracket_index + 1:closing_bracket_index-1]
-            rhs = string[closing_bracket_index + 1:]
+
+            lhs_index = opening_bracket_index + 1
+            rhs_index = closing_bracket_index
+
+            lhs = string[lhs_index:rhs_index-1]
+            rhs = string[rhs_index + 1:]
 
             # if there is no rhs, then the expression is (A&B)
             if len(rhs) == 0:
@@ -125,7 +129,12 @@ class Expression(Sentence):
                 return Sentence.from_string(lhs, known_symbols)
             
              # between lhs and rhs there is an operator
-            operator = string[closing_bracket_index]
+            # but the operator could be 1 length, 2 length of 3 length
+            # so we need the substring to find the operator
+            operator_substring = string[rhs_index:]
+
+            # find the operator
+            operator = cls.get_operator(operator_substring)
 
             # convert to operator
             second_operator = Operator(operator)

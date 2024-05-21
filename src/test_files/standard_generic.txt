@@ -1,0 +1,12 @@
+TELL
+(a <=> (c => ~d)) & b & (b => a); c; ~f || g;
+ASK
+~d & (~g => ~f)
+
+Standard Generic KB
+A standard generic KB with a valid solution
+YES: 3
+a     | b     | c     | d     | f     | g     | 
+True  | True  | True  | False | False | False | 
+True  | True  | True  | False | False | True  | 
+True  | True  | True  | False | True  | True  |

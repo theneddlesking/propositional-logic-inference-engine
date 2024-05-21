@@ -1,0 +1,13 @@
+TELL
+(a => b); c;
+ASK
+c
+
+Material Implication
+Verifies that (A => B) is the same as (~A || B)
+
+YES: 3
+a     | b     | c     | 
+False | False | True  | 
+False | True  | True  | 
+True  | True  | True  |

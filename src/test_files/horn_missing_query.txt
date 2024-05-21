@@ -1,0 +1,9 @@
+TELL
+a&b=>c;d;
+ASK
+e
+
+Horn KB Does Not Include Query Symbol
+A horn KB where the query symbol is not present in any of the statements (Note: BC will not entail anything because it has no starting point)
+NO: d
+NO:
