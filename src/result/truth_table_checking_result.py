@@ -18,8 +18,6 @@ class TruthTableCheckingResult(AlgorithmResult):
         found = "YES" if self.found else "NO"
 
         number_of_models = len(self.models)
-
-        print(self.get_truth_table_str())
         
         return f"{found}: {number_of_models}"
 
