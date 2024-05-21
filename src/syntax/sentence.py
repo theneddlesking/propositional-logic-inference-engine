@@ -64,6 +64,10 @@ class Expression(Sentence):
         self.rhs = rhs
 
     def __str__(self):
+        # if operator is negation then only show the rhs
+        if self.operator == Operator.NEGATION:
+            return f"{self.operator}{self.rhs}"
+
         return f"({self.lhs} {self.operator} {self.rhs})"
     
     @staticmethod
@@ -107,7 +111,7 @@ class Expression(Sentence):
             # negated sentence
             else:
                 # we need to negate this sentence
-                return cls(Sentence.from_string(string[(negation_index + negation_length):], known_symbols), Operator.NEGATION, None)
+                return cls(None, Operator.NEGATION, Sentence.from_string(string[(negation_index + negation_length):], known_symbols))
             
         # There are 3 bracket cases:
         # 1. (A&B)&C
@@ -167,7 +171,7 @@ class Expression(Sentence):
     
     def evaluate(self, model: Model) -> bool:
         if self.operator == Operator.NEGATION:
-            return not self.lhs.evaluate(model)
+            return not self.rhs.evaluate(model)
 
         if self.operator == Operator.CONJUNCTION:
             return self.lhs.evaluate(model) and self.rhs.evaluate(model)
