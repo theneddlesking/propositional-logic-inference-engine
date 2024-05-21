@@ -17,6 +17,8 @@ def main():
 
     overall_results: list[UnitTestResult] = []
 
+    test_number = 1
+
     # for each file in the folder
     for file in os.listdir(test_folder_path):
         # get the file path
@@ -33,6 +35,9 @@ def main():
 
         # for each algorithm
         for algorithm in inference_algorithms:
+            # print the test number
+            print(f"Test {test_number} " + "-" * 50 + "\n")
+
             # run the test
             result = Runner.run_test_from_file_path(algorithm, file_path)
 
@@ -42,7 +47,11 @@ def main():
             else:
                 print(f"\033[91m{result}\033[0m")
 
+            
+
             overall_results.append(result)
+
+            test_number += 1
 
     # print the overall results
     print("Overall Results:")

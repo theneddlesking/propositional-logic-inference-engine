@@ -20,4 +20,4 @@ class UnitTestResult:
 
     def __str__(self):
         passed_str = "PASSED" if self.passed else "FAILED"
-        return f"{self.name} ({self.algorithm_name}) - {passed_str}\n{self.description}\nExpected: {self.expect.debug()}\nActual: {self.actual.debug()}\nKB: {self.knowledge_base}\nQuery: {self.query}\n"
+        return f"{self.name} ({self.algorithm_name}) - {passed_str}\n{self.description}\n\nKB: {self.knowledge_base}\n\nQuery: {self.query}\n\nExpected: {self.expect.debug()}\n\nActual: {self.actual.debug()}\n"
