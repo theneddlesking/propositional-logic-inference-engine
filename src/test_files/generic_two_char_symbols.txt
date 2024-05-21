@@ -1,7 +1,7 @@
 TELL
 (p2 => p3); p1;
 ASK
-p3
+p1
 
 Generic KB With 2 Character Symbols
 Generic KB where there are only two character long symbols (eg. p1)
