@@ -194,6 +194,8 @@ class Expression(Sentence):
         # eliminate biconditionals and implications
         # replace A <=> B with (A => B) & (B => A)
         # replace A => B with ~A || B
+        sentence = self.convert_biconditionals()
+        sentence = self.convert_implications()
 
         # move negations inward (negation normal form)
         # apply de morgan's laws
@@ -201,17 +203,30 @@ class Expression(Sentence):
         # ~(A || B) === ~A & ~B
         # eliminate double negations
         # ~(~A) === A
+        sentence = self.apply_de_morgans_laws()
+        sentence = self.remove_double_negations()
 
         # distribute disjunctions over conjunctions
         # apply the distributive law to move disjunctions inside conjunctions
         # A || (B & C) === (A || B) & (A || C)
+        sentence = self.distribute_conjuctions_over_disjunctions()
+        return sentence
+    
+    def convert_biconditionals(self) -> Sentence:
+        pass
 
-        # end cnf form should be something like this
-        # (A || ~B || ~C) & (~D || E || F || D || F)
-        # (A || B) & (C)
-        # (A || B)
-        # (A)
-        return super().get_cnf()
+    def convert_implications(self) -> Sentence:
+        pass
+
+    def apply_de_morgans_laws(self) -> Sentence:
+        # also group the sentences
+        pass
+
+    def remove_double_negations(self) -> Sentence:
+        pass
+
+    def distribute_conjuctions_over_disjunctions(self) -> Sentence:
+        pass
 
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
