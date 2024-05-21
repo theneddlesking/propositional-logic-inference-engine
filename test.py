@@ -17,6 +17,9 @@ def main():
 
     overall_results: list[UnitTestResult] = []
 
+    # failed tests
+    failed_tests: list[str] = []
+
     test_number = 1
 
     # for each file in the folder
@@ -36,7 +39,7 @@ def main():
         # for each algorithm
         for algorithm in inference_algorithms:
             # print the test number
-            print(f"Test {test_number} " + "-" * 50 + "\n")
+            print(f"Test #{test_number} " + "-" * 50 + "\n")
 
             # run the test
             result = Runner.run_test_from_file_path(algorithm, file_path)
@@ -46,8 +49,7 @@ def main():
                 print(f"\033[92m{result}\033[0m")
             else:
                 print(f"\033[91m{result}\033[0m")
-
-            
+                failed_tests.append(f"#{test_number}")
 
             overall_results.append(result)
 
@@ -63,9 +65,15 @@ def main():
     if all(result.passed for result in overall_results):
         # as fraction
         print(f"\033[92mAll tests passed ({number_passed}/{len(overall_results)})\033[0m")
+
     else:
         # as fraction
         print(f"\033[91m{number_passed}/{len(overall_results)} tests passed\033[0m")
+
+        # print failed test numbers
+        failed_tests_str = ", ".join([str(test) for test in failed_tests])
+        print(f"Failed Tests: {failed_tests_str}")
+
 
 # runs the program if the file is run directly
 if __name__ == '__main__':
