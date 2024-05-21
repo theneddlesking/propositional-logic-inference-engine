@@ -1,0 +1,8 @@
+TELL
+a & ~(b & c) & ~d;
+ASK
+d
+
+Generic Conjunction of Negations
+This is a test to check how the negations are parsed
+NO: 0

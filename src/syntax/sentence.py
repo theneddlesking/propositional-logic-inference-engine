@@ -319,12 +319,64 @@ class Expression(Sentence):
 
     def apply_de_morgans_laws(self) -> Sentence:
         # check if we are negated
-        negated = self.operator == Operator.NEGATION
+        if self.operator == Operator.NEGATION:
+            # if we are negated then we want to apply de morgan's laws to the rhs
+            
+            # if the rhs is an expression then we need to apply de morgan's laws to it
+            if isinstance(self.rhs, Expression):
+                # apply de morgan's laws to the rhs
+                # NOTE: the rhs cannot be a negation because we are already removed double negations
+
+                # since we also removed bicoditionals and implications we don't need to check for them
+
+                # this means that the rhs is either a conjunction or disjunction
+
+                # so we need to apply de morgan's laws 
+
+                # now there are few cases to consider
+                # Case 1. ~(A & B)
+                # Case 2. ~(A || B)
+                # Case 3. ~(A & B & C)
+                # Case 4. ~(A || B || C)
+                # Case 5. ~(A & B || C)
+                # Case 6. ~(A || B & C)
+                # Case 7. ~(A & ~(B & C))
+                # Case 8. ~(A || ~(B || C))
+                # Case 9. ~(A & ~(B || C))
+                # Case 10. ~(A || ~(B & C))
+                # Case 11. ~(A & ~(B & ~(C & D)))
+                # Case 12. ~(A & ~(B & C) & D)
+
+                # The only cases that we want to apply de morgan's laws to are:
+                # Case 1. ~(A & B) -> ~A || ~B
+                # Case 2. ~(A || B) -> ~A & ~B
+                # Case 3. ~(A & B & C) -> ~A || ~B || ~C
+                # Case 4. ~(A || B || C) -> ~A & ~B & ~C
+
+                # Case 7 & 8 are interesting as the negation is removed so de morgan's law does it not apply later on
+
+                # ~(A & ~(B & C)) -> ~A || (B & C)
+                # ~(A || ~(B || C)) -> ~A & (B || C)
+
+                # Case 11 is interesting because it has another hit for de morgan's laws
+                # ~(A & ~(B & ~(C & D))) -> ~A || (B & ~(C & D)) -> ~A || (B & ~C || ~D)
+
+                # Case 12. ~(A & ~(B & C) & D) -> ~A || (B & C) || ~D
+
+                # If you hit inside first, it doesn't work because it can create a new case
+                # Case 12. ~(A & ~(B & C) & D) -> ~(A & (~B || ~C) & D) -> ~A || ~(~B || ~C) || ~D -> ~A || (B & C) || ~D
 
 
+                return self
+            
+            # if its an atom it can't be affected by de morgan's laws so we don't even need to recurse
+            return self
 
-        # also group the sentences
-        pass
+        # apply de morgan's laws to the lhs and rhs
+        self.lhs = self.lhs.apply_de_morgans_laws()
+        self.rhs = self.rhs.apply_de_morgans_laws()
+
+        return self
 
     def remove_double_negations(self) -> Sentence:
         # not negated so we can just recurse
