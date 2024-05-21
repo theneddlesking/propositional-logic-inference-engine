@@ -1,0 +1,8 @@
+TELL
+~(~(~(~(~a))));
+ASK
+a
+
+Nested Negations
+Check results for deeply nested negations.
+NO: 0

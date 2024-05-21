@@ -253,10 +253,11 @@ class Expression(Sentence):
         print("CONVERT IMPLICATIONS")
         print(sentence)
  
-        # remove double negations
         sentence = sentence.remove_double_negations()
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
+
+        
 
         # move negations inward (negation normal form)
         # apply de morgan's laws
