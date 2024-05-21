@@ -5,7 +5,6 @@ class Operator(Enum):
     BICONDITIONAL = '<=>'
 
     IMPLICATION = '=>'
-    AND = '&'
     NEGATION = '~'
     CONJUNCTION = '&'
     DISJUNCTION = '||'

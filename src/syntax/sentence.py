@@ -272,6 +272,10 @@ class Expression(Sentence):
         print("APPLY DE MORGANS LAWS")
         print(sentence)
 
+        sentence = sentence.remove_double_negations()
+        print("REMOVE DOUBLE NEGATION")
+        print(sentence)
+
         # move negations inward (negation normal form)
         # apply de morgan's laws
         # ~(A & B) === ~A || ~B
@@ -298,7 +302,7 @@ class Expression(Sentence):
             # A <=> B === (A => B) & (B => A)
             implication_lhs = Expression(self.lhs, Operator.IMPLICATION, self.rhs)
             implication_rhs = Expression(self.rhs, Operator.IMPLICATION, self.lhs)
-            return Expression(implication_lhs, Operator.AND, implication_rhs)
+            return Expression(implication_lhs, Operator.CONJUNCTION, implication_rhs)
     
         return self
 
@@ -323,51 +327,29 @@ class Expression(Sentence):
             # if we are negated then we want to apply de morgan's laws to the rhs
             
             # if the rhs is an expression then we need to apply de morgan's laws to it
-            if isinstance(self.rhs, Expression):
+            if isinstance(self.rhs, Expression) and self.rhs.lhs is not None:
                 # apply de morgan's laws to the rhs
                 # NOTE: the rhs cannot be a negation because we are already removed double negations
 
-                # since we also removed bicoditionals and implications we don't need to check for them
+                # get the inner expression of the negated sentence
+                inner_expression = self.rhs
+                inner_operator = inner_expression.operator
 
-                # this means that the rhs is either a conjunction or disjunction
+                # make sure that we only allow ands and ors
+                if inner_operator != Operator.DISJUNCTION and inner_operator != Operator.CONJUNCTION:
+                    raise ValueError("The operator is " + inner_operator.value + " and is not a disjunction or a conjunction")
 
-                # so we need to apply de morgan's laws 
+                # get the lhs and rhs
+                inner_lhs = inner_expression.lhs
+                inner_rhs = inner_expression.rhs
 
-                # now there are few cases to consider
-                # Case 1. ~(A & B)
-                # Case 2. ~(A || B)
-                # Case 3. ~(A & B & C)
-                # Case 4. ~(A || B || C)
-                # Case 5. ~(A & B || C)
-                # Case 6. ~(A || B & C)
-                # Case 7. ~(A & ~(B & C))
-                # Case 8. ~(A || ~(B || C))
-                # Case 9. ~(A & ~(B || C))
-                # Case 10. ~(A || ~(B & C))
-                # Case 11. ~(A & ~(B & ~(C & D)))
-                # Case 12. ~(A & ~(B & C) & D)
+                # flip the operator depending on the inner operator
+                other_operator = Operator.CONJUNCTION if inner_operator == Operator.DISJUNCTION else Operator.DISJUNCTION
 
-                # The only cases that we want to apply de morgan's laws to are:
-                # Case 1. ~(A & B) -> ~A || ~B
-                # Case 2. ~(A || B) -> ~A & ~B
-                # Case 3. ~(A & B & C) -> ~A || ~B || ~C
-                # Case 4. ~(A || B || C) -> ~A & ~B & ~C
-
-                # Case 7 & 8 are interesting as the negation is removed so de morgan's law does it not apply later on
-
-                # ~(A & ~(B & C)) -> ~A || (B & C)
-                # ~(A || ~(B || C)) -> ~A & (B || C)
-
-                # Case 11 is interesting because it has another hit for de morgan's laws
-                # ~(A & ~(B & ~(C & D))) -> ~A || (B & ~(C & D)) -> ~A || (B & ~C || ~D)
-
-                # Case 12. ~(A & ~(B & C) & D) -> ~A || (B & C) || ~D
-
-                # If you hit inside first, it doesn't work because it can create a new case
-                # Case 12. ~(A & ~(B & C) & D) -> ~(A & (~B || ~C) & D) -> ~A || ~(~B || ~C) || ~D -> ~A || (B & C) || ~D
-
-
-                return self
+                # apply de morgans law
+                negated_inner_lhs = Expression(None, Operator.NEGATION, inner_lhs)
+                negated_inner_rhs = Expression(None, Operator.NEGATION, inner_rhs)
+                return Expression(negated_inner_lhs.apply_de_morgans_laws(), other_operator, negated_inner_rhs.apply_de_morgans_laws())
             
             # if its an atom it can't be affected by de morgan's laws so we don't even need to recurse
             return self
