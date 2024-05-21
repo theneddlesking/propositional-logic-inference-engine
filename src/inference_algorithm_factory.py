@@ -2,6 +2,7 @@ from src.algorithm.backward_chaining import BackwardChaining
 from src.algorithm.forward_chaining import ForwardChaining
 from src.algorithm.test_algorithm import TestAlgorithm
 from src.algorithm.truth_table_checking import TruthTableChecking
+from src.file_parser import FileType
 from src.inference_algorithm import InferenceAlgorithm
 
 class InferenceAlgorithmFactory:
@@ -29,3 +30,13 @@ class InferenceAlgorithmFactory:
             
         # throw the error
         raise ValueError(f"Algorithm with name {name} not found, Valid algorithms are: {names}")
+    
+    @staticmethod
+    def get_inference_algorithms_from_file_type(file_type: FileType) -> list[InferenceAlgorithm]:
+        # filter the algorithms based on the file type
+        if file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
+            return [InferenceAlgorithmFactory.get_inference_algorithm_from_name("TT")]
+        elif file_type == FileType.CHAINING_TEST:
+            return [InferenceAlgorithmFactory.get_inference_algorithm_from_name("FC"), InferenceAlgorithmFactory.get_inference_algorithm_from_name("BC")]
+        
+        raise ValueError("Invalid file type")
