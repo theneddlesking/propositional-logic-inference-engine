@@ -1,0 +1,35 @@
+Base:
+
+1:
+(BICONDITIONALS)
+(~(p & q) => (~r || (q => s))) & ((~r || (q => s)) => ~(p & q))
+(IMPLICATIONS)
+((p & q) || (~r || (~q || s))) & (~(~r || (~q || s)) || ~(p & q))
+
+2:
+(DE MORGAN'S LAWS)
+((p & q) || (~r || (~q || s))) & ((~~r & ~(~q || s)) || ~(p & q))
+((p & q) || (~r || (~q || s))) & ((~~r & ~(~q || s)) || (~p || ~q))
+((p & q) || (~r || (~q || s))) & ((~~r & (~~q & ~s)) || (~p || ~q))
+(DOUBLE NEGATIONS) // Our implementation for literals doesn't know / care about double negations it just removes (unnegates) it
+// We will need it for sentences though
+// dO yOu SeE mY pOiNt???
+((p & q) || (~r || (~q || s))) & ((r & (q & ~s)) || (~p || ~q))
+
+2.5:
+(GROUPING)
+
+3:
+(DISTRIBUTE DISJUNCTIONS OVER CONJUNCTIONS)
+A || (B & C) === (A || B) & (A || C)
+
+((~r || (~q || s)) || p) & ((~r || (~q || s)) || q) & ((r & (q & ~s)) || (~p || ~q))
+((~r || (~q || s)) || p) & ((~r || (~q || s)) || q) & ((r & q & ~s) || (~p || ~q))
+(~r || ~q || s || p) & (~r || ~q || s || q) & ((r & q & ~s) || (~p || ~q))
+(~r || ~q || s || p) & (~r || ~q || s || q) & (~p || ~q || r) & (~p || ~q || q) & (~p || ~q || ~s)
+(~r || ~q || s || p) & (~p || ~q || r) & (~p || ~q || ~s)
+
+
+(~(p & q) <=> (~r || (q => s)))
+
+(~r || ~q || s || p) & (~p || ~q || r) & (~p || ~q || ~s)

@@ -160,6 +160,9 @@ class Expression(Sentence):
             # convert to operator
             second_operator = Operator(operator)
 
+            print("Bro I am the lhs " + lhs)
+            print("Fuck you I am the rhs " + rhs)
+
             return cls(Sentence.from_string(lhs, known_symbols), second_operator, Sentence.from_string(rhs, known_symbols))
         
         # split the string into lhs and rhs at the first operator only
