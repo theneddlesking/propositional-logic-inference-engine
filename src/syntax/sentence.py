@@ -39,6 +39,12 @@ class Sentence:
     
     def remove_double_negations(self) -> 'Sentence':
         raise NotImplementedError("Removing double negations should be implemented in subclasses.")
+    
+    def apply_de_morgans_laws(self) -> 'Sentence':
+        raise NotImplementedError("Applying De Morgan's laws should be implemented in subclasses.")
+    
+    def distribute_conjuctions_over_disjunctions(self) -> 'Sentence':
+        raise NotImplementedError("Distributing conjunctions over disjunctions should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -72,7 +78,13 @@ class AtomicSentence(Sentence):
 
     def remove_double_negations(self) -> Sentence:
         return self
-
+    
+    def apply_de_morgans_laws(self) -> Sentence:
+        return self
+    
+    def distribute_conjuctions_over_disjunctions(self) -> Sentence:
+        return self
+    
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
         self.lhs = lhs
@@ -240,7 +252,6 @@ class Expression(Sentence):
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
     def get_cnf(self) -> Sentence:
-        # TODO: add types
         # eliminate biconditionals and implications
         # replace A <=> B with (A => B) & (B => A)
         # replace A => B with ~A || B
@@ -257,7 +268,9 @@ class Expression(Sentence):
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
 
-        
+        sentence = sentence.apply_de_morgans_laws()
+        print("APPLY DE MORGANS LAWS")
+        print(sentence)
 
         # move negations inward (negation normal form)
         # apply de morgan's laws
@@ -305,15 +318,17 @@ class Expression(Sentence):
         return self
 
     def apply_de_morgans_laws(self) -> Sentence:
+        # check if we are negated
+        negated = self.operator == Operator.NEGATION
+
+
+
         # also group the sentences
         pass
 
     def remove_double_negations(self) -> Sentence:
-        # if we are negated
-        negated = self.operator == Operator.NEGATION
-
         # not negated so we can just recurse
-        if not negated:
+        if not self.operator == Operator.NEGATION:
             self.lhs = self.lhs.remove_double_negations()
             self.rhs = self.rhs.remove_double_negations()
             return self
@@ -321,19 +336,19 @@ class Expression(Sentence):
         # if we are negated then we need to check if the rhs is negated
         if isinstance(self.rhs, Expression):
 
-            # double negation
+            # rhs is negated, so its a double negation
             if self.rhs.operator == Operator.NEGATION:
                 # recurse rhs
                 return self.rhs.rhs.remove_double_negations()
                         
-            # child is not negated so we can just recurse
+            # child is not negated so we can just recurse as there is no double negation
             self.rhs = self.rhs.remove_double_negations()
             return self
         
-        # negated atom
+        # othercase is that the rhs is an atomic sentence
         self.rhs: AtomicSentence
 
-        # double negation
+        # if atom is negated there is a double negation
         if self.rhs.atom.negated:
             return AtomicSentence(Atom(self.rhs.atom.name, False))
         

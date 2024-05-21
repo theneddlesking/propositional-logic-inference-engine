@@ -4,7 +4,6 @@ from enum import Enum
 class Operator(Enum):
     BICONDITIONAL = '<=>'
 
-
     IMPLICATION = '=>'
     AND = '&'
     NEGATION = '~'
