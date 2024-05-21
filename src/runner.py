@@ -56,7 +56,7 @@ class Runner:
         actual_result = algorithm.run(knowledge_base, query)
 
         # compare the results by building the test case
-        test = UnitTestResult(name, description, expected_result, actual_result)
+        test = UnitTestResult(name, description, algorithm.name, expected_result, actual_result)
 
         # return the test result
         return test

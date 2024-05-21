@@ -1,0 +1,17 @@
+TELL
+a => b => c => d => e; a;
+ASK
+e
+
+Generic Significant Chaining
+Generic KB where there are multiple steps of implication to check whether it continues deeper
+YES: 8
+a     | b     | c     | d     | e     | 
+True  | False | False | False | True  | 
+True  | False | False | True  | True  | 
+True  | False | True  | False | True  | 
+True  | False | True  | True  | True  | 
+True  | True  | False | False | True  | 
+True  | True  | False | True  | True  | 
+True  | True  | True  | False | True  | 
+True  | True  | True  | True  | True  |

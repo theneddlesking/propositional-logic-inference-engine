@@ -1,0 +1,8 @@
+TELL
+
+ASK
+a
+
+Generic KB No sentences
+A generic KB that has no entered sentences
+NO: 0

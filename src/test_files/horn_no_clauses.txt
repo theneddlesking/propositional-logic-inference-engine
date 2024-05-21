@@ -1,0 +1,9 @@
+TELL
+
+ASK
+a
+
+Horn KB No Clauses
+A horn KB without any clauses
+NO:
+NO: 

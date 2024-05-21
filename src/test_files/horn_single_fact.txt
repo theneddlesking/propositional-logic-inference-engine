@@ -1,0 +1,9 @@
+TELL
+a;
+ASK
+a
+
+Horn KB Single Fact
+The simplest possible valid horn KB
+YES: a
+YES: a

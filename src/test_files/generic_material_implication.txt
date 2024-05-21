@@ -5,7 +5,6 @@ c
 
 Material Implication
 Verifies that (A => B) is the same as (~A || B)
-
 YES: 3
 a     | b     | c     | 
 False | False | True  | 

@@ -1,0 +1,9 @@
+TELL
+p1&p2=>p3;p1;p2;
+ASK
+p3
+
+Horn KB With 2 Character Symbols
+Horn KB where there are only two character long symbols (eg. p1)
+YES: p1, p2, p3
+YES: p1, p2, p3

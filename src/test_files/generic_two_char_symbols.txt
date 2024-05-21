@@ -1,0 +1,12 @@
+TELL
+(p2 => p3); p1;
+ASK
+p3
+
+Generic KB With 2 Character Symbols
+Generic KB where there are only two character long symbols (eg. p1)
+YES: 3
+p1    | p2    | p3    | 
+True  | False | False | 
+True  | False | True  | 
+True  | True  | True  |
