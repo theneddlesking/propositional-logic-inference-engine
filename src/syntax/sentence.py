@@ -266,11 +266,9 @@ class Expression(Sentence):
         print("CONVERT IMPLICATIONS")
         print(sentence)
 
-        grandparent = Expression(None, None, None)
-        parent = Expression(None, None, grandparent)
-
+ 
         # remove double negations
-        sentence = sentence.remove_double_negations(grandparent, parent)
+        sentence = sentence.remove_double_negations(None, None)
 
         print("REMOVE DOUBLE NEGATION")
         print(sentence)
