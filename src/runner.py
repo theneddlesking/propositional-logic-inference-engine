@@ -1,4 +1,5 @@
 from src.algorithm_result import AlgorithmResult
+from src.cnf_knowledge_base import CNFKnowledgeBase
 from src.file_parser import FileParser, FileType
 from src.horn_knowledge_base import HornKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
@@ -22,6 +23,10 @@ class Runner:
             positive_literal = query.sentence.atom
 
             query = HornKnowledgeBaseQuery(positive_literal)
+        elif algorithm.name == 'DPLL':
+            # convert to cnf kb
+            print(knowledge_base)
+            knowledge_base = CNFKnowledgeBase.from_generic_knowledge_base(knowledge_base)
 
         # run the algorithm
         return algorithm.run(knowledge_base, query)
@@ -35,6 +40,7 @@ class Runner:
         if file_type != FileType.CHAINING_TEST and file_type != FileType.TRUTH_TABLE_CHECKING_TEST:
             raise ValueError("File is not a test file")
 
+        # TODO: refactor duplicate code
         # get the knowledge base and query from the file
         knowledge_base, query = FileParser.parse_kb_and_query(file_path)
 

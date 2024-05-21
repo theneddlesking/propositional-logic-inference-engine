@@ -1,4 +1,5 @@
 from src.algorithm.backward_chaining import BackwardChaining
+from src.algorithm.dpll import DPLL
 from src.algorithm.forward_chaining import ForwardChaining
 from src.algorithm.test_algorithm import TestAlgorithm
 from src.algorithm.truth_table_checking import TruthTableChecking
@@ -10,7 +11,7 @@ class InferenceAlgorithmFactory:
     # gets the list of all implemented inference algorithms
     @staticmethod
     def get_inference_algorithms():
-        algorithms: list[InferenceAlgorithm] = [TruthTableChecking(), ForwardChaining(), BackwardChaining(), TestAlgorithm()]
+        algorithms: list[InferenceAlgorithm] = [TruthTableChecking(), ForwardChaining(), BackwardChaining(), DPLL(), TestAlgorithm()]
         return algorithms
 
     @staticmethod

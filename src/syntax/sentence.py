@@ -30,6 +30,9 @@ class Sentence:
     
     def get_cnf(self) -> 'Sentence':
         raise NotImplementedError("Converting to CNF should be implemented in subclasses.")
+    
+    def convert_biconditionals(self) -> 'Sentence':
+        raise NotImplementedError("Converting biconditionals should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -53,6 +56,9 @@ class AtomicSentence(Sentence):
         return set([self.atom])
     
     def get_cnf(self) -> Sentence:
+        return self
+    
+    def convert_biconditionals(self) -> Sentence:
         return self
 
 class Expression(Sentence):
@@ -108,8 +114,37 @@ class Expression(Sentence):
 
             # negated sentence
             else:
+                # TODO: refactor, this shit is too similar to opening bracket below
                 # we need to negate this sentence
-                return cls(None, Operator.NEGATION, Sentence.from_string(string[(negation_index + negation_length):], known_symbols))
+                opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
+                closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+
+                operator_substring = string[closing_bracket_index:]
+
+                # if there is no rhs, then the expression could be e.g. ~(A&B)
+                if len(operator_substring) == 0:
+                    # so we just take the lhs
+                    # index is 2 because we need to skip over negation and opening bracket
+                    return Sentence.from_string(string[2:-1], known_symbols)
+                
+                # get the next operator after the closing bracket
+                second_operator = cls.get_operator(operator_substring)
+
+                # first part: get the local index of the second operator in the operator substring
+                # second part: add the index of where it is in the actual string
+                second_operator_index = operator_substring.find(second_operator.value) + (len(string) - len(operator_substring))
+
+                # lhs_string is everything before the second operator index
+                # rhs_string is everything after the second operator index plus the operator's length
+                lhs_string = string[opening_bracket_index:second_operator_index]
+                rhs_string = string[second_operator_index + len(second_operator.value):]
+
+                lhs = Sentence.from_string(lhs_string, known_symbols)
+                rhs = Sentence.from_string(rhs_string, known_symbols)
+
+                negated_sentence = Expression(None, Operator.NEGATION, lhs)
+
+                return Expression(negated_sentence, second_operator, rhs)
             
         # There are 3 bracket cases:
         # 1. (A&B)&C
@@ -142,7 +177,7 @@ class Expression(Sentence):
             # find the operator
             operator_substring = string[closing_bracket_index:]
 
-            # if there is no rhs, then the expression is (A&B)
+            # if there is no rhs, then the expression could be e.g. (A&B)
             if len(operator_substring) == 0:
                 # so we just take the lhs
                 return Sentence.from_string(string[1:-1], known_symbols)
@@ -195,6 +230,7 @@ class Expression(Sentence):
         # replace A <=> B with (A => B) & (B => A)
         # replace A => B with ~A || B
         sentence = self.convert_biconditionals()
+        print(sentence)
         sentence = self.convert_implications()
 
         # move negations inward (negation normal form)
@@ -213,7 +249,20 @@ class Expression(Sentence):
         return sentence
     
     def convert_biconditionals(self) -> Sentence:
-        pass
+        # negation expression doesn't have a lhs
+        if self.operator != Operator.NEGATION:
+            self.lhs = self.lhs.convert_biconditionals()
+        self.rhs = self.rhs.convert_biconditionals()
+
+        # this isn't an infinite loop, the atomic sentence has the base case
+        if self.operator == Operator.BICONDITIONAL:
+            # split the biconditional using the following rule:
+            # A <=> B === (A => B) & (B => A)
+            implication_lhs = Expression(self.lhs, Operator.IMPLICATION, self.rhs)
+            implication_rhs = Expression(self.rhs, Operator.IMPLICATION, self.lhs)
+            return Expression(implication_lhs, Operator.AND, implication_rhs)
+    
+        return self
 
     def convert_implications(self) -> Sentence:
         pass
