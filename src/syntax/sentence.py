@@ -392,8 +392,19 @@ class Expression(Sentence):
         # (A & B) || (C & D) -> (A & B || C) & (A & B || D) -> ((A || C) & (B || C)) & ((A || D) & (B || D))
         # (A || (B & (C || D))) -> (A || B) & (A || (C || D))
 
-        
-        pass
+        # ensure rhs isn't a literal
+        if isinstance(self.rhs, AtomicSentence):
+            # get out of here
+            self.lhs = self.lhs.distribute_conjuctions_over_disjunctions()
+            return self
+
+        future_sentence: Expression = self.rhs
+        # we need to check the current operator
+        future_operator = future_sentence.operator
+        # we need to check the previous operator
+        current_operator = self.operator
+        if self.operator == Operator.CONJUNCTION:
+            pass
 
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         # convert to a negated atomic sentence
