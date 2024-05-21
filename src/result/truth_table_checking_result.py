@@ -18,15 +18,15 @@ class TruthTableCheckingResult(AlgorithmResult):
         found = "YES" if self.found else "NO"
 
         number_of_models = len(self.models)
-
-        self.print_truth_table()
         
         return f"{found}: {number_of_models}"
 
-    def print_truth_table(self):
+    def get_truth_table_str(self):
+        string = ""
+
         # get all the symbols
         if len(self.models) == 0:
-            print("There were no suitable models found to print the table")
+            string += "There were no suitable models found to print the table"
             return
 
         symbols: list[str] = list(self.models[0].values.keys())
@@ -40,17 +40,29 @@ class TruthTableCheckingResult(AlgorithmResult):
 
         # print the symbols with adjusted width
         for symbol in symbols:
-            print(f"{symbol: <{col_width}}", end="| ")
+            string += f"{symbol: <{col_width}}| "
 
-        print()
+        string += "\n"
 
         # print the values with adjusted width
         for model in self.models:
             for symbol in symbols:
                 value = model.get(symbol)
                 value_str = str(value)
-                print(f"{value_str: <{col_width}}", end="| ")
-            print()
+                string += f"{value_str: <{col_width}}| "
+            string += "\n"
+
+        # remove the last newline
+        string = string[:-1]
+        
+        return string
 
     def __eq__(self, other: 'TruthTableCheckingResult') -> bool: 
         return self.found == other.found and self.models == other.models
+    
+    def debug(self):
+        str = super().debug()
+        str += "\n"
+        # add table
+        str += self.get_truth_table_str()
+        return str

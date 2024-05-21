@@ -4,5 +4,5 @@ ASK
 d
 
 Generic KB With No Solution
-This is a standard generic KB with no solution to check that it handles this case correctly
+This is a standard generic KB with no solution
 NO: 0
