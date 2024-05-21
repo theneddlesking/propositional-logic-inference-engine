@@ -58,11 +58,6 @@ def main():
         # as fraction
         print(f"\033[91m{number_passed}/{len(overall_results)} tests passed\033[0m")
 
-    
-    
-
-
-
 # runs the program if the file is run directly
 if __name__ == '__main__':
     main()
