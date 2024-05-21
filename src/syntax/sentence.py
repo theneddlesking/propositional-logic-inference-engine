@@ -84,7 +84,7 @@ class Expression(Sentence):
                 index = string.index(op.value)
         
         if operator is None:
-            raise ValueError(f"Could not find an operator in {string}.")
+            raise ValueError(f"Could not find an operator in {string}")
         
         return operator
         
@@ -136,32 +136,28 @@ class Expression(Sentence):
             if opening_bracket_index != -1:
                 closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
 
-            # split the string into lhs and rhs at the closing bracket and ignore the opening bracket
-
-            lhs_index = opening_bracket_index + 1
-            rhs_index = closing_bracket_index
-
-            lhs = string[lhs_index:rhs_index-1]
-            rhs = string[rhs_index + 1:]
-
-            # if there is no rhs, then the expression is (A&B)
-            if len(rhs) == 0:
-                # so we just take the lhs
-                return Sentence.from_string(lhs, known_symbols)
-            
-             # between lhs and rhs there is an operator
+            # between lhs and rhs there is an operator
             # but the operator could be 1 length, 2 length of 3 length
             # so we need the substring to find the operator
-            operator_substring = string[rhs_index:]
-
             # find the operator
-            operator = cls.get_operator(operator_substring)
+            operator_substring = string[closing_bracket_index:]
 
-            # convert to operator
-            second_operator = Operator(operator)
+            # if there is no rhs, then the expression is (A&B)
+            if len(operator_substring) == 0:
+                # so we just take the lhs
+                return Sentence.from_string(string[1:-1], known_symbols)
+            
+            # get the next operator after the closing bracket
+            second_operator = cls.get_operator(operator_substring)
 
-            print("Bro I am the lhs " + lhs)
-            print("Fuck you I am the rhs " + rhs)
+            # first part: get the local index of the second operator in the operator substring
+            # second part: add the index of where it is in the actual string
+            second_operator_index = operator_substring.find(second_operator.value) + (len(string) - len(operator_substring))
+
+            # lhs is everything before the second operator index
+            # rhs is everything after the second operator index plus the operator's length
+            lhs = string[:second_operator_index]
+            rhs = string[second_operator_index + len(second_operator.value):]
 
             return cls(Sentence.from_string(lhs, known_symbols), second_operator, Sentence.from_string(rhs, known_symbols))
         

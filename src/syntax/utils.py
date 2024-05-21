@@ -29,7 +29,6 @@ class Utils:
     @staticmethod
     def is_negated_propositional_symbol(string: str) -> bool:
         # doesn't start with negation
-        print("BRO wtf is this shit " + string)
         if string[0] != Operator.NEGATION.value:
             return False
         
