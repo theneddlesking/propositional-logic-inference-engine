@@ -76,11 +76,6 @@ class Expression(Sentence):
         index = len(string)
 
         for op in Operator:
-
-            # skip negations because the literal handles that
-            if op == Operator.NEGATION:
-                continue
-
             # take the left most operator
             if op.value in string and string.index(op.value) < index:
                 operator = op
@@ -107,7 +102,8 @@ class Expression(Sentence):
                 # if its not a bracket then we need to find the next operator
                 operator = cls.get_operator(string[(negation_index + negation_length):])
             else:
-                print("sheesh")
+                # we need to negate this sentence
+                return cls(Sentence.from_string(string[(negation_index + negation_length):], known_symbols), Operator.NEGATION, None)
             
         # There are 3 bracket cases:
         # 1. (A&B)&C
