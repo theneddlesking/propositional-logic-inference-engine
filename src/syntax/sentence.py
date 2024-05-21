@@ -391,20 +391,64 @@ class Expression(Sentence):
         # (B & C) || A -> (A || B) & (A || C)
         # (A & B) || (C & D) -> (A & B || C) & (A & B || D) -> ((A || C) & (B || C)) & ((A || D) & (B || D))
         # (A || (B & (C || D))) -> (A || B) & (A || (C || D))
+        # A & (B || (C & (D || E))) -> A & (B || C) & (B || (D || E))
+        # A & (B & (C || D) & E) -> A & B & (C || D) & E
+        # (A || B) || (C & D) -> (A || B || C) & (A || B || D)
+        # detect the disjunction
+        # only care if it is outside the two surrounding expressions
 
-        # ensure rhs isn't a literal
-        if isinstance(self.rhs, AtomicSentence):
-            # get out of here
-            self.lhs = self.lhs.distribute_conjuctions_over_disjunctions()
-            return self
+        # if we disjunction into a sentence that conjunctionafise two new sentences
+        # its gg (we need to distribute jerry)
+        if self.operator == Operator.DISJUNCTION:
+            lhs = self.lhs
+            rhs = self.rhs
+            if not (isinstance(lhs, AtomicSentence) and isinstance(rhs, AtomicSentence)):
+                # we pogging
+                if isinstance(lhs, AtomicSentence):
+                    # A || EXPRESSION
+                    # check if the rhs has the disjunction operator
+                    # lhs = A rhs = (B & C)
+                    # A || (B & C) -> (A || B) & (A || C)
+                    rhs: Expression
+                    if rhs.operator == Operator.CONJUNCTION:
+                        distributed_lhs = Expression(lhs, Operator.DISJUNCTION, rhs.lhs)
+                        distributed_rhs = Expression(lhs, Operator.DISJUNCTION, rhs.rhs)
+                        return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
+                elif isinstance(rhs, AtomicSentence):
+                    # EXPRESSION || A
+                    # check if the lhs has the disjunction operator
+                    # lhs = (B & C), rhs = A
+                    # (B & C) || A -> (A || B) & (A || C)
+                    lhs: Expression
+                    if lhs.operator == Operator.CONJUNCTION:
+                        distributed_lhs = Expression(rhs, Operator.DISJUNCTION, lhs.lhs)
+                        distributed_rhs = Expression(rhs, Operator.DISJUNCTION, lhs.rhs)
+                        return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
+                else:
+                    # EXPRESSION || EXPRESSION
+                    # we only care when both of expressions dont have disjunction operators
+                    if not (lhs.operator == Operator.DISJUNCTION and rhs.operator == Operator.DISJUNCTION):
+                        if lhs.operator == Operator.CONJUNCTION and rhs.operator == Operator.CONJUNCTION:
+                            # (A & B) || (C & D) -> (A & B || C) & (A & B || D)
+                            distributed_lhs = Expression(lhs, Operator.DISJUNCTION, rhs.lhs)
+                            distributed_rhs = Expression(lhs, Operator.DISJUNCTION, rhs.rhs)
+                            return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
+                        elif lhs.operator == Operator.DISJUNCTION:
+                            # (A || B) || (C & D) -> (A || B || C) & (A || B || D)
+                            distributed_lhs = Expression(lhs, Operator.DISJUNCTION, rhs.lhs)
+                            distributed_rhs = Expression(lhs, Operator.DISJUNCTION, rhs.rhs)
+                            return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
+                        else:
+                            # (A & B) || (C || D) -> (A || C || D) & (B || C || D)
+                            distributed_lhs = Expression(rhs, Operator.DISJUNCTION, lhs.lhs)
+                            distributed_rhs = Expression(rhs, Operator.DISJUNCTION, lhs.rhs)
+                            return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
 
-        future_sentence: Expression = self.rhs
-        # we need to check the current operator
-        future_operator = future_sentence.operator
-        # we need to check the previous operator
-        current_operator = self.operator
-        if self.operator == Operator.CONJUNCTION:
-            pass
+        # recurse the distribution function to both sides of the expression
+        self.lhs = self.lhs.distribute_conjuctions_over_disjunctions()
+        self.rhs = self.rhs.distribute_conjuctions_over_disjunctions()
+
+        return self
 
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         # convert to a negated atomic sentence
