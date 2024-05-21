@@ -6,6 +6,12 @@ class Atom:
         self.name = name
         self.negated = negated
 
+    def __eq__(self, other: 'Atom'):
+        return self.name == other.name and self.negated == other.negated
+    
+    def __hash__(self):
+        return hash((self.name, self.negated))
+
     def __str__(self):
         return f"{Operator.NEGATION.value if self.negated else ''}{self.name}"
     

@@ -57,6 +57,9 @@ class AtomicSentence(Sentence):
     def __str__(self):
         return str(self.atom)
     
+    def __eq__(self, other: 'AtomicSentence'):
+        return self.atom == other.atom
+    
     def evaluate(self, model: Model) -> bool:
         # handle negation of the atom
         value_according_model = model.get(self.atom.name)
@@ -434,7 +437,7 @@ class Expression(Sentence):
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         # convert to a negated atomic sentence
         if self.operator == Operator.NEGATION:
-            return AtomicSentence(Atom(self.rhs, True))
+            return AtomicSentence(Atom(self.rhs.atom.name, True))
         
         # recurse
         self.lhs = self.lhs.convert_negated_sentence_to_negated_literal()

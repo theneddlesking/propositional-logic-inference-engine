@@ -8,15 +8,9 @@ class Literal(Atom):
             raise ValueError(f"{symbol} is not a valid propositional symbol.")
 
         super().__init__(symbol, negated)
-
-    def __eq__(self, other: 'Literal'):
-        return self.name == other.name and self.negated == other.negated
     
     def __lt__(self, other: 'Literal'):
         return self.name < other.name
-
-    def __hash__(self):
-        return hash((self.name, self.negated))
     
     def __str__(self):
         return f"{Operator.NEGATION.value if self.negated else ''}{self.name}"
