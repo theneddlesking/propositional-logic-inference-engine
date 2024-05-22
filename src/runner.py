@@ -26,8 +26,11 @@ class Runner:
         elif algorithm.name == 'DPLL':
             # convert to cnf kb
             print("KB:")
+            print("Before")
             print(knowledge_base)
             knowledge_base = CNFKnowledgeBase.from_generic_knowledge_base(knowledge_base)
+            print("After")
+            print(knowledge_base)
 
         # run the algorithm
         return algorithm.run(knowledge_base, query)

@@ -28,7 +28,7 @@ class Sentence:
     def evaluate(self, model: Model) -> bool:
         raise NotImplementedError("Evaluate should be implemented in subclasses.")
     
-    def get_cnf(self) -> 'Sentence':
+    def get_cnfs(self) -> 'Sentence':
         raise NotImplementedError("Converting to CNF should be implemented in subclasses.")
     
     def convert_biconditionals(self) -> 'Sentence':
@@ -73,7 +73,7 @@ class AtomicSentence(Sentence):
     def get_symbols(self) -> set[Literal]:
         return set([self.atom])
     
-    def get_cnf(self) -> Sentence:
+    def get_cnfs(self) -> Sentence:
         return self
     
     def convert_biconditionals(self) -> Sentence:
@@ -260,35 +260,30 @@ class Expression(Sentence):
     def get_symbols(self) -> set[Literal]:
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
-    def get_cnf(self) -> Sentence:
+    def get_cnfs(self) -> list['CNFSentence']:
         sentence = self.convert_biconditionals()
-        print("CONVERT BICONDITIONALS")
-        print(sentence)
 
         sentence = sentence.convert_implications()
-        print("CONVERT IMPLICATIONS")
-        print(sentence)
  
         sentence = sentence.remove_double_negations()
-        print("REMOVE DOUBLE NEGATION")
-        print(sentence)
 
         sentence = sentence.apply_de_morgans_laws()
-        print("APPLY DE MORGANS LAWS")
-        print(sentence)
 
         sentence = sentence.remove_double_negations()
-        print("REMOVE DOUBLE NEGATION")
-        print(sentence)
 
         sentence = sentence.convert_negated_sentence_to_negated_literal()
-        print("CONVERT NEGATED SENTENCES TO NEGATED LITERALS")
-        print(sentence)
 
-        sentence = sentence.distribute_conjuctions_over_disjunctions()
-        print("DISTRIBUTE CONJUNCTIONS OVER DISJUNCTIONS")
-        print(sentence)
-        return sentence
+        # HUGE TODO: refactor this
+        previous_string = str(sentence)
+        while True:
+            sentence = sentence.distribute_conjuctions_over_disjunctions()
+            if previous_string == str(sentence):
+                break
+            previous_string = str(sentence)
+
+        sentence: Expression
+        cnfs = sentence.get_cnf_subsentences()
+        return cnfs
     
     def convert_biconditionals(self) -> Sentence:
         # negation expression doesn't have a lhs
@@ -444,6 +439,20 @@ class Expression(Sentence):
         self.rhs = self.rhs.convert_negated_sentence_to_negated_literal()
         return self
 
+    def get_cnf_subsentences(self) -> list['CNFSentence']:
+        # (~a || ~b) || ((d || c) & (d || f))
+        # (~a || ~b) || ((d || c) & (d || f))
+        # (~a || ~b || d || c) & (d || f)
+        sentence_string = str(self).replace(" ", "").replace(Operator.OPENING_BRACKET.value, "").replace(Operator.CLOSING_BRACKET.value, "")
+        disjunction_sentences = sentence_string.split(Operator.CONJUNCTION.value)
+
+        cnfs = []
+        for disjunction_sentence in disjunction_sentences:
+            literals = set(disjunction_sentence.split(Operator.DISJUNCTION.value))
+            cnfs.append(CNFSentence(literals))
+
+        return cnfs
+
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
 
@@ -452,7 +461,7 @@ class HornClause(Expression):
         self.body = body
         self.head = head
 
-        lhs = Sentence.from_string("&".join([str(literal) for literal in self.body]), known_symbols)
+        lhs = Sentence.from_string(Operator.CONJUNCTION.value.join([str(literal) for literal in self.body]), known_symbols)
         rhs = AtomicSentence(self.head)
 
         super().__init__(lhs, Operator.IMPLICATION, rhs)
@@ -507,3 +516,18 @@ class HornClause(Expression):
     
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
+    
+class CNFSentence(Expression):
+    def __init__(self, disjunction_literals: set[Literal]):
+        sorted_disjunctions = sorted(list(disjunction_literals))
+        self.disjunction_literals = disjunction_literals
+
+        sentence = Expression.from_string(Operator.DISJUNCTION.value.join([str(literal) for literal in sorted_disjunctions]), self.disjunction_literals)
+
+        super().__init__(sentence.lhs, sentence.operator, sentence.rhs)
+
+    def is_tautology(self) -> bool:
+        for symbol in self.get_symbols():
+            if Literal(symbol.name, not symbol.negated) in self.get_symbols():
+                return True
+        return False
