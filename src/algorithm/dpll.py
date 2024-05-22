@@ -12,8 +12,11 @@ class DPLL(InferenceAlgorithm):
         super().__init__("DPLL")
 
     def run(self, knowledge_base: CNFKnowledgeBase, query: Query) -> DPLLResult:
-        # create the model
-        print(knowledge_base)
+        # convert query cnf
+        query_cnfs = query.sentence.get_cnfs()
+
+        # add cnfs
+        knowledge_base.clauses.extend(query_cnfs)
 
         satisifable = self.dpll(knowledge_base)
 
