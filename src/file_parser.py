@@ -77,9 +77,9 @@ class FileParser:
         if algorithm_name != "FC" and algorithm_name != "BC" and file_type == FileType.CHAINING_TEST:
             raise ValueError('Chaining test file can only be used with FC or BC')
         
-        # can't use general kb for anything other than TT
-        if algorithm_name != "TT" and file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
-            raise ValueError('Truth table checking test file can only be used with TT')
+        # can't use general kb for anything other than TT and DPLL
+        if (algorithm_name != "TT" and algorithm_name != "DPLL") and file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
+            raise ValueError('Truth table checking test file can only be used with TT and DPLL')
 
         with open(file_path, 'r') as file:
             # get the lines from the file

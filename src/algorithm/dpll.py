@@ -12,7 +12,6 @@ class DPLL(InferenceAlgorithm):
         super().__init__("DPLL")
 
     def run(self, knowledge_base: CNFKnowledgeBase, query: Query) -> DPLLResult:
-
         # create the model
         print(knowledge_base)
 

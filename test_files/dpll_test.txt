@@ -1,0 +1,8 @@
+TELL
+a || b;
+ASK
+a
+
+Basic DPLL Test
+This is a generic test for DPLL
+YES: 1
