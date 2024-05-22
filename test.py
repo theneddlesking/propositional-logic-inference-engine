@@ -9,7 +9,7 @@ from src.test.unit_test_result import UnitTestResult
 def main():
     # not enough arguments
     if len(sys.argv) < 2:
-        print("Usage: python test.py <test_folder_path>")
+        print("Usage: python test.py <test_folder_path> [<algorithm type?>]")
         return
 
     # get the folder name
@@ -19,6 +19,9 @@ def main():
 
     # failed tests
     failed_tests: list[str] = []
+
+    # get algorithm type if it exists
+    algorithm_type = sys.argv[2] if len(sys.argv) > 2 else None
 
     test_number = 1
 
@@ -35,6 +38,14 @@ def main():
 
         # get the inference algorithms
         inference_algorithms = InferenceAlgorithmFactory.get_inference_algorithms_from_file_type(file_type)
+
+        # if we have specified a specifc algorithm and it's not in the list we can't do it for this file
+        if algorithm_type and algorithm_type not in [algorithm.name for algorithm in inference_algorithms]:
+            continue        
+
+        # otherwise set the inference algorithms to the one specified
+        if algorithm_type:
+            inference_algorithms = [InferenceAlgorithmFactory.get_inference_algorithm_from_name(algorithm_type)]
 
         # for each algorithm
         for algorithm in inference_algorithms:
