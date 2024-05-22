@@ -77,7 +77,7 @@ class AtomicSentence(Sentence):
         return set([self.atom])
     
     def get_cnfs(self) -> Sentence:
-        return self
+        return [CNFClause(set([self.atom]))]
     
     def convert_biconditionals(self) -> Sentence:
         return self

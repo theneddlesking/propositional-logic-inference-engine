@@ -17,6 +17,7 @@ class CNFKnowledgeBase(KnowledgeBase):
         cnf_sentences: list[CNFClause] = []
 
         for sentence in knowledge_base.sentences:
+            res = sentence.get_cnfs()
             cnf_sentences.extend(sentence.get_cnfs())
 
         # filter out invalid sentences

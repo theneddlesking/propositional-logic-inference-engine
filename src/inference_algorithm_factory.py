@@ -36,7 +36,7 @@ class InferenceAlgorithmFactory:
     def get_inference_algorithms_from_file_type(file_type: FileType) -> list[InferenceAlgorithm]:
         # filter the algorithms based on the file type
         if file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
-            return [InferenceAlgorithmFactory.get_inference_algorithm_from_name("TT")]
+            return [InferenceAlgorithmFactory.get_inference_algorithm_from_name("TT"), InferenceAlgorithmFactory.get_inference_algorithm_from_name("DPLL")]
         elif file_type == FileType.CHAINING_TEST:
             return [InferenceAlgorithmFactory.get_inference_algorithm_from_name("FC"), InferenceAlgorithmFactory.get_inference_algorithm_from_name("BC")]
         

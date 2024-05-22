@@ -1,8 +1,10 @@
 TELL
 a || b;
 ASK
-a
+~a
 
 Basic DPLL Test
 This is a generic test for DPLL
 YES: 1
+a     | b     |
+False  | True |

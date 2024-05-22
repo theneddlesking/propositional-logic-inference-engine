@@ -3,7 +3,8 @@ from src.cnf_knowledge_base import CNFKnowledgeBase
 from src.file_parser import FileParser, FileType
 from src.horn_knowledge_base import HornKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
-from src.query import HornKnowledgeBaseQuery
+from src.knowledge_base import KnowledgeBase
+from src.query import HornKnowledgeBaseQuery, Query
 from src.test.unit_test_result import UnitTestResult
 
 class Runner:
@@ -13,6 +14,10 @@ class Runner:
         # get the knowledge base and query from the file
         knowledge_base, query = FileParser.parse_kb_and_query(file_path)
 
+        return Runner.run_algorithm_from_default(algorithm, knowledge_base, query)
+    
+    @staticmethod
+    def run_algorithm_from_default(algorithm: InferenceAlgorithm, knowledge_base: KnowledgeBase, query: Query) -> AlgorithmResult:
         # only works on horn kb so we make some conversions
         if algorithm.name == "FC" or algorithm.name == "BC":
 
@@ -26,7 +31,6 @@ class Runner:
         elif algorithm.name == 'DPLL':
             # convert to cnf kb
             knowledge_base = CNFKnowledgeBase.from_generic_knowledge_base(knowledge_base)
-
 
         # run the algorithm
         return algorithm.run(knowledge_base, query)
@@ -44,22 +48,11 @@ class Runner:
         # get the knowledge base and query from the file
         knowledge_base, query = FileParser.parse_kb_and_query(file_path)
 
-        # only works on horn kb so we make some conversions
-        if algorithm.name == "FC" or algorithm.name == "BC":
-
-            # convert to horn kb if algorithm is FC or BC
-            knowledge_base = HornKnowledgeBase.from_generic_knowledge_base(knowledge_base)
-
-            # convert to horn query if algorithm is FC or BC
-            positive_literal = query.sentence.atom
-
-            query = HornKnowledgeBaseQuery(positive_literal)
+        # get the actual result
+        actual_result = Runner.run_algorithm_from_default(algorithm, knowledge_base, query)
 
         # get the expected result
         expected_result, name, description = FileParser.parse_test(file_path, file_type, algorithm.name)
-
-        # get the actual result
-        actual_result = algorithm.run(knowledge_base, query)
 
         # compare the results by building the test case
         test = UnitTestResult(name, description, algorithm.name, knowledge_base, query, expected_result, actual_result)

@@ -4,6 +4,7 @@ from src.knowledge_base import KnowledgeBase
 from src.model import Model
 from src.query import Query
 from src.result.chaining_result import ChainingResult
+from src.result.dpll_result import DPLLResult
 from src.result.truth_table_checking_result import TruthTableCheckingResult
 from src.syntax.literal import Literal
 
@@ -127,6 +128,10 @@ class FileParser:
         
             # get expected result for general kb
             if file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
+                # dppl doesn't care about models
+                if algorithm_name == "DPLL":
+                    return DPLLResult(found), name, description
+
                 # number of models
                 number_of_models = int(split[1])
 
@@ -136,6 +141,7 @@ class FileParser:
                     if number_of_models != 0:
                         raise ValueError('Number of models does not match expected number of models')
 
+             
                     return TruthTableCheckingResult([], found), name, description
                 
                 # get models from table
