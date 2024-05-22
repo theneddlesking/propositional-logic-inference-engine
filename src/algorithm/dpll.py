@@ -1,6 +1,5 @@
 from src.cnf_knowledge_base import CNFKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
-from src.model import Model
 from src.query import Query
 from src.result.dpll_result import DPLLResult
 from src.syntax.literal import Literal
