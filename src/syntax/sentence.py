@@ -270,12 +270,16 @@ class Expression(Sentence):
         sentence = self.convert_biconditionals()
 
         sentence = sentence.convert_implications()
- 
-        sentence = sentence.remove_double_negations()
 
-        sentence = sentence.apply_de_morgans_laws()
+        # HUGE TODO: refactor this
+        previous_string = str(sentence)
+        while True:
+            sentence = sentence.remove_double_negations()
+            sentence = sentence.apply_de_morgans_laws()
 
-        sentence = sentence.remove_double_negations()
+            if previous_string == str(sentence):
+                break
+            previous_string = str(sentence)        
 
         sentence = sentence.convert_negated_sentence_to_negated_literal()
 
