@@ -48,12 +48,9 @@ class CNFKnowledgeBase(KnowledgeBase):
         # set the unit literal to None
         self.unit_literal_to_propogate = None
 
-    def has_pure_symbol(self) -> bool:
+    def get_pure_literals(self) -> set[Literal]:
         # get all the literals
         literals = [literal for clause in self.clauses for literal in clause.disjunction_literals]
-
-        # get all the symbols
-        symbols = [literal for literal in literals]
 
         # positive literals
         positive_literal_symbols = [literal.name for literal in literals if not literal.negated]
@@ -65,27 +62,16 @@ class CNFKnowledgeBase(KnowledgeBase):
         positive_symbols = set(positive_literal_symbols) - set(negative_literals_symbols)
         negative_symbols = set(negative_literals_symbols) - set(positive_literal_symbols)
 
-        print("positive symbols")
-        # stringify so its in line
-        print(positive_symbols, end="")
-
-        print("\nnegative symbols")
-        print(negative_symbols, end="")
-        # if we ever see only r 
-        # or only ~s in the symbols
-
-        # assign them to the pure value r and ~s from the models
-
-        print("\nall symbols across all clauses")
-        print([str(symbol) for symbol in symbols], end="")
-
-
         # get the pure symbols
         pure_symbols = set(positive_symbols) | set(negative_symbols)
 
-        print("\npure symbols")
-        print(pure_symbols, end="")
+        # get the pure literals
+        pure_literals = set([(Literal(symbol_name, symbol_name in negative_symbols)) for symbol_name in pure_symbols])
         
-        return len(pure_symbols) > 0
+        return pure_literals
+    
+    def assign_pure_literal(self, pure_literal: Literal):
+        for clause in self.clauses:
+            clause.update_model(pure_literal) 
     
   

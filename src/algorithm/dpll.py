@@ -36,10 +36,12 @@ class DPLL(InferenceAlgorithm):
             # propagate the unit literal
             cnf.unit_propagate()
 
+        pure_literals = cnf.get_pure_literals()
+
         # check for pure symbols
         # pure symbols are symbols that only appear as positive or negative literals throughout the knowledge base
-        while cnf.has_pure_symbol():
-            cnf = cnf.pure_symbol_assign()
+        for literal in pure_literals:
+            cnf.assign_pure_literal(literal)
 
         if cnf.is_empty():
             return True
