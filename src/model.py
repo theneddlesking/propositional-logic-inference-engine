@@ -19,6 +19,11 @@ class Model():
 
         return str
     
+    def set_value(self, symbol: str, value: bool):
+        # only add it if it exists in the model
+        if symbol in self.values:
+            self.values[symbol] = value
+    
     def get(self, symbol: str) -> bool:
         return self.values[symbol]
     

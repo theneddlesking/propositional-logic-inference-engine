@@ -49,7 +49,7 @@ class Sentence:
     def convert_negated_sentence_to_negated_literal(self) -> 'Sentence':
         raise NotImplementedError("Converted negated sentences should be implemented in subclasses.")
     
-    def get_cnf_subsentences(self) -> list['CNFSentence']:
+    def get_cnf_subsentences(self) -> list['CNFClause']:
         raise NotImplementedError("Getting CNF sub sentences should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
@@ -97,8 +97,8 @@ class AtomicSentence(Sentence):
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         return self
     
-    def get_cnf_subsentences(self) -> list['CNFSentence']:
-        return [CNFSentence(set([self.atom]))]
+    def get_cnf_subsentences(self) -> list['CNFClause']:
+        return [CNFClause(set([self.atom]))]
     
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
@@ -266,7 +266,7 @@ class Expression(Sentence):
     def get_symbols(self) -> set[Literal]:
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
-    def get_cnfs(self) -> list['CNFSentence']:
+    def get_cnfs(self) -> list['CNFClause']:
         sentence = self.convert_biconditionals()
 
         sentence = sentence.convert_implications()
@@ -448,7 +448,7 @@ class Expression(Sentence):
         self.rhs = self.rhs.convert_negated_sentence_to_negated_literal()
         return self
 
-    def get_cnf_subsentences(self) -> list['CNFSentence']:
+    def get_cnf_subsentences(self) -> list['CNFClause']:
         # (~a || ~b) || ((d || c) & (d || f))
         # (~a || ~b) || ((d || c) & (d || f))
         # (~a || ~b || d || c) & (d || f)
@@ -461,7 +461,7 @@ class Expression(Sentence):
 
             literals = [Literal.from_string(literal_string) for literal_string in literals_as_strings]
                 
-            cnfs.append(CNFSentence(set(literals)))
+            cnfs.append(CNFClause(set(literals)))
 
         return cnfs
 
@@ -529,7 +529,9 @@ class HornClause(Expression):
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
     
-class CNFSentence:
+
+# the clause is a unit clause if it has only one unassigned literal and the rest are false
+class CNFClause:
     def __init__(self, disjunction_literals: set[Literal]):
         sorted_disjunctions = sorted(list(disjunction_literals))
 
@@ -548,6 +550,36 @@ class CNFSentence:
             if Literal(symbol.name, not symbol.negated) in self.disjunction_literals:
                 return True
         return False
+
+    def is_unit_clause(self) -> bool:
+        # count the number of unassigned literals
+        number_of_unassigned_literals_in_model = 0
+        for symbol in self.disjunction_literals:
+            if self.model.get(symbol.name) is None:
+                number_of_unassigned_literals_in_model += 1
+
+        # count the number of false literals
+        number_of_false_literals = 0
+        for symbol in self.disjunction_literals:
+            if self.model.get(symbol.name) is not None and self.model.get(symbol.name) == False:
+                number_of_false_literals += 1
+
+        # count the number of literals
+        number_of_literals = len(self.model.values)
+
+        # the clause is a unit clause if it has only one unassigned literal and the rest are false
+        return number_of_unassigned_literals_in_model == 1 and number_of_false_literals == number_of_literals - 1
+        
+    def get_unit_literal(self) -> Literal:
+        for symbol in self.disjunction_literals:
+            if self.model.get(symbol.name) is None:
+                return symbol
+            
+        raise ValueError("No unit literal found.")
     
+    def update_model(self, unit_literal: Literal):
+        # update the model
+        self.model.set_value(unit_literal.name, not unit_literal.negated)
+
     def __str__(self):
         return str(self.sentence)

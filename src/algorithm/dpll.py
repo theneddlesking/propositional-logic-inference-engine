@@ -14,16 +14,13 @@ class DPLL(InferenceAlgorithm):
     def run(self, knowledge_base: CNFKnowledgeBase, query: Query) -> DPLLResult:
 
         # create the model
+        print(knowledge_base)
 
         satisifable = self.dpll(knowledge_base)
 
         return DPLLResult(satisifable)        
 
     def dpll(self, cnf: CNFKnowledgeBase) -> bool:
-
-        for clause in cnf.clauses:
-            print(clause.model)
-        
         # the clause is a unit clause if it has only one unassigned literal and the rest are false
         # the one unassigned literal is the unit literal
 
@@ -34,10 +31,13 @@ class DPLL(InferenceAlgorithm):
         # a formula is false if one clause in the formula is false
         # otherwise the formula is unassigned
 
-
+        # propogate unit literals from unit clauses
         while cnf.has_unit_clause():
-            cnf = cnf.unit_propagate()
+            # propagate the unit literal
+            cnf.unit_propagate()
 
+        # check for pure symbols
+        # pure symbols are symbols that only appear as positive or negative literals throughout the knowledge base
         while cnf.has_pure_symbol():
             cnf = cnf.pure_symbol_assign()
 
