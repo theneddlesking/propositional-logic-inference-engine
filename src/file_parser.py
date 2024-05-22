@@ -130,7 +130,7 @@ class FileParser:
             if file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
                 # dppl doesn't care about models
                 if algorithm_name == "DPLL":
-                    return DPLLResult(found), name, description
+                    return DPLLResult(found, None), name, description
 
                 # number of models
                 number_of_models = int(split[1])

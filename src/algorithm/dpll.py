@@ -20,7 +20,7 @@ class DPLL(InferenceAlgorithm):
 
         satisifable = self.dpll(knowledge_base)
 
-        return DPLLResult(satisifable)        
+        return DPLLResult(satisifable, knowledge_base.copy())        
 
     def dpll(self, cnf: CNFKnowledgeBase) -> bool:
         # the clause is a unit clause if it has only one unassigned literal and the rest are false
