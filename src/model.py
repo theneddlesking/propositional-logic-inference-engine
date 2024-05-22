@@ -4,7 +4,7 @@
 class Model():
     def __init__(self, values: dict[str, bool]):
         # sort the keys alphabetically
-        values = dict(sorted(values.items()))        
+        values = dict(sorted(values.items()))
 
         self.values = values
 
@@ -26,6 +26,9 @@ class Model():
     
     def get(self, symbol: str) -> bool:
         return self.values[symbol]
+    
+    def copy(self) -> 'Model':
+        return Model(self.values.copy())
     
     def __eq__(self, other: 'Model') -> bool:
         return self.values == other.values

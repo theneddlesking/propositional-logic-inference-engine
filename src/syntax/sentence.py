@@ -581,5 +581,14 @@ class CNFClause:
         # update the model
         self.model.set_value(unit_literal.name, not unit_literal.negated)
 
+    def is_empty(self) -> bool:
+        return all([state is not None for state in self.model.values.values()])
+    
+    def copy(self) -> 'CNFClause':
+        new_model = self.model.copy()
+        new_cnf = CNFClause(self.disjunction_literals)
+        new_cnf.model = new_model
+        return new_cnf
+
     def __str__(self):
         return str(self.sentence)

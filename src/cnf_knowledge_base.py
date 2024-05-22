@@ -32,13 +32,10 @@ class CNFKnowledgeBase(KnowledgeBase):
         return False
     
     def is_empty(self) -> bool:
-        return len(self.sentences) == 0
+        return all([clause.is_empty() for clause in self.clauses])
     
     def has_empty_clause(self) -> bool:
-        for sentence in self.sentences:
-            if sentence.is_empty_clause():
-                return True
-        return False
+        return any([clause.is_empty() for clause in self.clauses])
     
     def unit_propagate(self):
         # each sentence needs to be updated
@@ -72,6 +69,21 @@ class CNFKnowledgeBase(KnowledgeBase):
     
     def assign_pure_literal(self, pure_literal: Literal):
         for clause in self.clauses:
-            clause.update_model(pure_literal) 
+            clause.update_model(pure_literal)
+
+    def choose_symbol(self) -> Literal:
+        for clause in self.clauses:
+            model = clause.model
+            for symbol, state in model.values.items():
+                if state is None:
+                    return symbol
+        raise ValueError("All symbols have a value assigned")
     
+    def assign(self, symbol: str, state: bool):
+        for clause in self.clauses:
+            clause.update_model(Literal(symbol, not state))
+    
+    def copy(self) -> 'CNFKnowledgeBase':
+        new_sentences = [clause.copy() for clause in self.clauses]
+        return CNFKnowledgeBase(self.propositional_symbols, new_sentences)
   
