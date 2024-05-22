@@ -1,4 +1,3 @@
-from src.cnf_model import CNFModel
 from src.model import Model
 from src.syntax.atom import Atom, BoolAtom
 from src.syntax.operator import Operator
@@ -543,7 +542,7 @@ class CNFClause:
         self.sentence = Sentence.from_string(sentence_string, set())
 
         # local model
-        self.model = CNFModel({symbol: None for symbol in sorted_disjunctions})
+        self.model = Model({symbol.name: None for symbol in sorted_disjunctions})
 
 
     def is_tautology(self) -> bool:
@@ -556,13 +555,13 @@ class CNFClause:
         # count the number of unassigned literals
         number_of_unassigned_literals_in_model = 0
         for symbol in self.disjunction_literals:
-            if self.model.get(symbol) is None:
+            if self.model.get(symbol.name) is None:
                 number_of_unassigned_literals_in_model += 1
 
         # count the number of false literals
         number_of_false_literals = 0
         for symbol in self.disjunction_literals:
-            if self.model.get(symbol) is not None and self.model.get(symbol) == False:
+            if self.model.get(symbol.name) is not None and self.model.get(symbol.name) == False:
                 number_of_false_literals += 1
 
         # count the number of literals
@@ -573,7 +572,7 @@ class CNFClause:
         
     def get_unit_literal(self) -> Literal:
         for symbol in self.disjunction_literals:
-            if self.model.get(symbol) is None:
+            if self.model.get(symbol.name) is None:
                 return symbol
             
         raise ValueError("No unit literal found.")

@@ -17,6 +17,7 @@ class CNFKnowledgeBase(KnowledgeBase):
         cnf_sentences: list[CNFClause] = []
 
         for sentence in knowledge_base.sentences:
+            res = sentence.get_cnfs()
             cnf_sentences.extend(sentence.get_cnfs())
 
         # filter out invalid sentences
@@ -38,7 +39,6 @@ class CNFKnowledgeBase(KnowledgeBase):
         return any([clause.is_empty() for clause in self.clauses])
     
     def unit_propagate(self):
-        # print("unit propagate", self.unit_literal_to_propogate)
         # each sentence needs to be updated
         for clause in self.clauses:
             clause.update_model(self.unit_literal_to_propogate)
@@ -70,7 +70,6 @@ class CNFKnowledgeBase(KnowledgeBase):
     
     def assign_pure_literal(self, pure_literal: Literal):
         for clause in self.clauses:
-            print("assigning pure literal", pure_literal)
             clause.update_model(pure_literal)
 
     def choose_symbol(self) -> Literal:
@@ -83,7 +82,6 @@ class CNFKnowledgeBase(KnowledgeBase):
     
     def assign(self, symbol: str, state: bool):
         for clause in self.clauses:
-            print("assign", state, symbol)
             clause.update_model(Literal(symbol, not state))
     
     def copy(self) -> 'CNFKnowledgeBase':
