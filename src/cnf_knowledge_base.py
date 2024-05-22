@@ -19,3 +19,9 @@ class CNFKnowledgeBase(KnowledgeBase):
         valid_cnf_sentences = [sentence for sentence in cnf_sentences if not sentence.is_tautology()]
 
         return cls(knowledge_base.propositional_symbols, valid_cnf_sentences)
+    
+    def has_unit_clause(self) -> bool:
+        for sentence in self.sentences:
+            if sentence.is_unit_clause():
+                return True
+        return False
