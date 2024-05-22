@@ -4,7 +4,8 @@ from src.syntax.sentence import CNFSentence, Sentence
 
 class CNFKnowledgeBase(KnowledgeBase):
 
-    def __init__(self, propositional_symbols: set[Literal], cnf_sentences: list[Sentence]):
+    def __init__(self, propositional_symbols: set[Literal], cnf_sentences: list[CNFSentence]):
+        self.clauses = cnf_sentences
         super().__init__(cnf_sentences, propositional_symbols)
 
     @classmethod
@@ -25,3 +26,14 @@ class CNFKnowledgeBase(KnowledgeBase):
             if sentence.is_unit_clause():
                 return True
         return False
+    
+    def is_empty(self) -> bool:
+        return len(self.sentences) == 0
+    
+    def has_empty_clause(self) -> bool:
+        for sentence in self.sentences:
+            if sentence.is_empty_clause():
+                return True
+        return False
+    
+  

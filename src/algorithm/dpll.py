@@ -1,7 +1,9 @@
 from src.cnf_knowledge_base import CNFKnowledgeBase
 from src.inference_algorithm import InferenceAlgorithm
+from src.model import Model
 from src.query import Query
 from src.result.dpll_result import DPLLResult
+from src.syntax.literal import Literal
 
 
 class DPLL(InferenceAlgorithm):
@@ -10,11 +12,29 @@ class DPLL(InferenceAlgorithm):
         super().__init__("DPLL")
 
     def run(self, knowledge_base: CNFKnowledgeBase, query: Query) -> DPLLResult:
+
+        # create the model
+
         satisifable = self.dpll(knowledge_base)
+
         return DPLLResult(satisifable)        
 
     def dpll(self, cnf: CNFKnowledgeBase) -> bool:
+
+        for clause in cnf.clauses:
+            print(clause.model)
         
+        # the clause is a unit clause if it has only one unassigned literal and the rest are false
+        # the one unassigned literal is the unit literal
+
+        # a clause is true if for each literal in the clause, the literal is true (satisfies the partial model)
+        # otherwise the clause is unassigned
+
+        # a formula is true if all clauses in the formula are true
+        # a formula is false if one clause in the formula is false
+        # otherwise the formula is unassigned
+
+
         while cnf.has_unit_clause():
             cnf = cnf.unit_propagate()
 

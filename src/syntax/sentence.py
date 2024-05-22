@@ -539,6 +539,9 @@ class CNFSentence:
 
         self.sentence = Sentence.from_string(sentence_string, set())
 
+        # local model
+        self.model = Model({symbol.name: None for symbol in sorted_disjunctions})
+
 
     def is_tautology(self) -> bool:
         for symbol in self.disjunction_literals:
