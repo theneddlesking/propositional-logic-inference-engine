@@ -48,6 +48,9 @@ class Sentence:
     
     def convert_negated_sentence_to_negated_literal(self) -> 'Sentence':
         raise NotImplementedError("Converted negated sentences should be implemented in subclasses.")
+    
+    def get_cnf_subsentences(self) -> list['CNFSentence']:
+        raise NotImplementedError("Getting CNF sub sentences should be implemented in subclasses.")
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -93,6 +96,9 @@ class AtomicSentence(Sentence):
     
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         return self
+    
+    def get_cnf_subsentences(self) -> list['CNFSentence']:
+        return [CNFSentence(set([self.atom]))]
     
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
@@ -281,7 +287,6 @@ class Expression(Sentence):
                 break
             previous_string = str(sentence)
 
-        sentence: Expression
         cnfs = sentence.get_cnf_subsentences()
         return cnfs
     
@@ -379,7 +384,7 @@ class Expression(Sentence):
 
         # if atom is negated there is a double negation
         if self.rhs.atom.negated:
-            return AtomicSentence(Atom(self.rhs.atom.name, False))
+            return AtomicSentence(Literal(self.rhs.atom.name, False))
         
         # not double negation
         return self
@@ -432,7 +437,7 @@ class Expression(Sentence):
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         # convert to a negated atomic sentence
         if self.operator == Operator.NEGATION:
-            return AtomicSentence(Atom(self.rhs.atom.name, True))
+            return AtomicSentence(Literal(self.rhs.atom.name, True))
         
         # recurse
         self.lhs = self.lhs.convert_negated_sentence_to_negated_literal()
@@ -448,8 +453,11 @@ class Expression(Sentence):
 
         cnfs = []
         for disjunction_sentence in disjunction_sentences:
-            literals = set(disjunction_sentence.split(Operator.DISJUNCTION.value))
-            cnfs.append(CNFSentence(literals))
+            literals_as_strings = disjunction_sentence.split(Operator.DISJUNCTION.value)
+
+            literals = [Literal.from_string(literal_string) for literal_string in literals_as_strings]
+                
+            cnfs.append(CNFSentence(set(literals)))
 
         return cnfs
 
@@ -517,17 +525,22 @@ class HornClause(Expression):
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
     
-class CNFSentence(Expression):
+class CNFSentence:
     def __init__(self, disjunction_literals: set[Literal]):
         sorted_disjunctions = sorted(list(disjunction_literals))
+
         self.disjunction_literals = disjunction_literals
 
-        sentence = Expression.from_string(Operator.DISJUNCTION.value.join([str(literal) for literal in sorted_disjunctions]), self.disjunction_literals)
+        sentence_string = Operator.DISJUNCTION.value.join([str(literal) for literal in sorted_disjunctions])
 
-        super().__init__(sentence.lhs, sentence.operator, sentence.rhs)
+        self.sentence = Sentence.from_string(sentence_string, set())
+
 
     def is_tautology(self) -> bool:
-        for symbol in self.get_symbols():
-            if Literal(symbol.name, not symbol.negated) in self.get_symbols():
+        for symbol in self.disjunction_literals:
+            if Literal(symbol.name, not symbol.negated) in self.disjunction_literals:
                 return True
         return False
+    
+    def __str__(self):
+        return str(self.sentence)
