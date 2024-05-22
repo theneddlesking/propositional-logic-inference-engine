@@ -3,7 +3,7 @@ from src.model import Model
 from src.syntax.literal import Literal
 
 class TruthTableCheckingResult(AlgorithmResult):
-    def __init__(self, models: list[Model], found: bool):
+    def __init__(self, models: list[Model], found: bool,):
         super().__init__("TT")
         self.found = found
 

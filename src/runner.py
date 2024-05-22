@@ -44,7 +44,6 @@ class Runner:
         if file_type != FileType.CHAINING_TEST and file_type != FileType.TRUTH_TABLE_CHECKING_TEST:
             raise ValueError("File is not a test file")
 
-        # TODO: refactor duplicate code
         # get the knowledge base and query from the file
         knowledge_base, query = FileParser.parse_kb_and_query(file_path)
 
