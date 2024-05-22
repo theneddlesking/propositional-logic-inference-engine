@@ -577,9 +577,9 @@ class CNFClause:
             
         raise ValueError("No unit literal found.")
     
-    def update_model(self, unit_literal: Literal):
+    def update_model(self, unit_literal: Literal, literal_negated: False = bool):
         # update the model
-        self.model.set_value(unit_literal.name, not unit_literal.negated)
+        self.model.set_value(unit_literal.name, not unit_literal.negated, literal_negated)
 
     def is_empty(self) -> bool:
         return all([state is not None for state in self.model.values.values()])
@@ -589,6 +589,13 @@ class CNFClause:
         new_cnf = CNFClause(self.disjunction_literals)
         new_cnf.model = new_model
         return new_cnf
+    
+    def find_literal_negation(self, name: str) -> bool:
+        for literal in self.disjunction_literals:
+            if literal.name == name:
+                return literal.negated
+        # return false by default
+        return False
 
     def __str__(self):
         return str(self.sentence)

@@ -41,7 +41,7 @@ class CNFKnowledgeBase(KnowledgeBase):
     def unit_propagate(self):
         # each sentence needs to be updated
         for clause in self.clauses:
-            clause.update_model(self.unit_literal_to_propogate)
+            clause.update_model(self.unit_literal_to_propogate, clause.find_literal_negation(self.unit_literal_to_propogate.name))
 
         # set the unit literal to None
         self.unit_literal_to_propogate = None
@@ -70,7 +70,7 @@ class CNFKnowledgeBase(KnowledgeBase):
     
     def assign_pure_literal(self, pure_literal: Literal):
         for clause in self.clauses:
-            clause.update_model(pure_literal)
+            clause.update_model(pure_literal, clause.find_literal_negation(pure_literal.name))
 
     def choose_symbol(self) -> Literal:
         for clause in self.clauses:
@@ -82,7 +82,7 @@ class CNFKnowledgeBase(KnowledgeBase):
     
     def assign(self, symbol: str, state: bool):
         for clause in self.clauses:
-            clause.update_model(Literal(symbol, not state))
+            clause.update_model(Literal(symbol, not state), clause.find_literal_negation(symbol))
     
     def copy(self) -> 'CNFKnowledgeBase':
         new_sentences = [clause.copy() for clause in self.clauses]
