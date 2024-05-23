@@ -1,6 +1,7 @@
 from src.cnf_clause import CNFClause
 from src.knowledge_base import KnowledgeBase
 from src.model import Model
+from src.syntax.literal import Literal
 
 class CNFKnowledgeBase():
 
@@ -36,20 +37,54 @@ class CNFKnowledgeBase():
         return CNFKnowledgeBase([clause.copy() for clause in self.clauses], self.symbols.copy())
   
     def satisfies(self, model: Model) -> bool:
-        return all(clause.satisfied(model) for clause in self.clauses)
+        return all(clause.satisfies(model) for clause in self.clauses)
     
     def contains_empty_clause(self) -> bool:
         return any(clause.is_empty() for clause in self.clauses)
     
     def simplify(self, model: Model) -> 'CNFKnowledgeBase':
-        new_clauses = []
+        new_clauses: list[CNFClause] = []
 
-        for clause in self.clauses:
-            new_clause, satisified = clause.simplify(model)
+        # only keep the clauses that are not satisfied
+        unsatisied_clauses: list[CNFClause] = [clause for clause in self.clauses if not clause.satisfies(model)]
 
-            # if the clause is satisfied, we can ignore it
-            if not satisified:
-                new_clauses.append(new_clause)
+        # simplify the unsatisfied clauses
+        new_clauses = [clause.simplify(model) for clause in unsatisied_clauses]
+
+        # # optimise clauses by removing pure literals
+        # pure_literals = self.get_pure_literals(new_clauses)
+
+        # # remove the pure literals from the clauses
+        # for clause in new_clauses:
+        #     clause.literals = [literal for literal in clause.literals if literal not in pure_literals]
+
+        # # update the symbols
+        # new_symbols = self.symbols - set([literal.name for literal in pure_literals])
+
+        # # update model
+        # model = Model({symbol: model.get(symbol) for symbol in new_symbols})
 
         return CNFKnowledgeBase(new_clauses, self.symbols)
-        
+    
+    def get_pure_literals(self, clauses: list[CNFClause]) -> set[Literal]:
+        # get all the literals
+        literals: set[Literal] = set()
+
+        for clause in clauses:
+            for literal in clause.literals:
+                literals.add(literal)
+
+        # get all the pure literals
+        pure_literals = set()
+
+        for literal in literals:
+
+            # literal is pure if it has constant polarity across all clauses
+            opposite_literal = Literal(literal.name, not literal.negated)
+
+            # check if the opposite literal is in the clauses
+            if opposite_literal not in literals:
+                pure_literals.add(literal)
+
+        return pure_literals
+    

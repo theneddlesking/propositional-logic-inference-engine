@@ -47,7 +47,7 @@ class DPLL(InferenceAlgorithm):
         # choose a symbol that is not yet assigned
         symbol = self.choose_symbol(model)
 
-        # no more symbols to assign, check if the cnf is satisfied
+        # no more symbols to assign and cnf is not satisfied
         if symbol is None:
             return False
 
