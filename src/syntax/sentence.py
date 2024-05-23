@@ -1,3 +1,4 @@
+from src.cnf_clause import CNFClause
 from src.model import Model
 from src.syntax.atom import Atom, BoolAtom
 from src.syntax.operator import Operator
@@ -28,7 +29,7 @@ class Sentence:
     def evaluate(self, model: Model) -> bool:
         raise NotImplementedError("Evaluate should be implemented in subclasses.")
     
-    def get_cnfs(self) -> 'Sentence':
+    def get_cnfs(self) -> 'list[CNFClause]':
         raise NotImplementedError("Converting to CNF should be implemented in subclasses.")
     
     def convert_biconditionals(self) -> 'Sentence':
@@ -76,7 +77,7 @@ class AtomicSentence(Sentence):
     def get_symbols(self) -> set[Literal]:
         return set([self.atom])
     
-    def get_cnfs(self) -> Sentence:
+    def get_cnfs(self) -> list[CNFClause]:
         return [CNFClause(set([self.atom]))]
     
     def convert_biconditionals(self) -> Sentence:
@@ -529,73 +530,3 @@ class HornClause(Expression):
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
     
-
-# the clause is a unit clause if it has only one unassigned literal and the rest are false
-class CNFClause:
-    def __init__(self, disjunction_literals: set[Literal]):
-        sorted_disjunctions = sorted(list(disjunction_literals))
-
-        self.disjunction_literals = disjunction_literals
-
-        sentence_string = Operator.DISJUNCTION.value.join([str(literal) for literal in sorted_disjunctions])
-
-        self.sentence = Sentence.from_string(sentence_string, set())
-
-        # local model
-        self.model = Model({symbol.name: None for symbol in sorted_disjunctions})
-
-
-    def is_tautology(self) -> bool:
-        for symbol in self.disjunction_literals:
-            if Literal(symbol.name, not symbol.negated) in self.disjunction_literals:
-                return True
-        return False
-
-    def is_unit_clause(self) -> bool:
-        # count the number of unassigned literals
-        number_of_unassigned_literals_in_model = 0
-        for symbol in self.disjunction_literals:
-            if self.model.get(symbol.name) is None:
-                number_of_unassigned_literals_in_model += 1
-
-        # count the number of false literals
-        number_of_false_literals = 0
-        for symbol in self.disjunction_literals:
-            if self.model.get(symbol.name) is not None and self.model.get(symbol.name) == False:
-                number_of_false_literals += 1
-
-        # count the number of literals
-        number_of_literals = len(self.model.values)
-
-        # the clause is a unit clause if it has only one unassigned literal and the rest are false
-        return number_of_unassigned_literals_in_model == 1 and number_of_false_literals == number_of_literals - 1
-        
-    def get_unit_literal(self) -> Literal:
-        for symbol in self.disjunction_literals:
-            if self.model.get(symbol.name) is None:
-                return symbol
-            
-        raise ValueError("No unit literal found.")
-    
-    def update_model(self, unit_literal: Literal, literal_negated: False = bool):
-        # update the model
-        self.model.set_value(unit_literal.name, not unit_literal.negated, literal_negated)
-
-    def is_empty(self) -> bool:
-        return all([state is not None for state in self.model.values.values()])
-    
-    def copy(self) -> 'CNFClause':
-        new_model = self.model.copy()
-        new_cnf = CNFClause(self.disjunction_literals)
-        new_cnf.model = new_model
-        return new_cnf
-    
-    def find_literal_negation(self, name: str) -> bool:
-        for literal in self.disjunction_literals:
-            if literal.name == name:
-                return literal.negated
-        # return false by default
-        return False
-
-    def __str__(self):
-        return str(self.sentence)

@@ -19,16 +19,11 @@ class Model():
 
         return str
     
-    def set_value(self, symbol: str, value: bool, negated: False = bool):
-        # only add it if it exists in the model
-        if symbol in self.values:
-            if not negated:
-                self.values[symbol] = value
-            else:
-                self.values[symbol] = not value
-    
     def get(self, symbol: str) -> bool:
         return self.values[symbol]
+    
+    def set(self, symbol: str, value: bool):
+        self.values[symbol] = value
     
     def copy(self) -> 'Model':
         return Model(self.values.copy())

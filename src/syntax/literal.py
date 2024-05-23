@@ -1,3 +1,4 @@
+from src.model import Model
 from src.syntax.atom import Atom
 from src.syntax.operator import Operator
 from src.syntax.utils import Utils
@@ -23,6 +24,15 @@ class Literal(Atom):
         
         # no negation
         return cls(string, False)
+    
+    def satifies(self, model: Model) -> bool:
+        model_value = model.get(self.name)
+
+        # the model should contain a value for the literal
+        if model_value is None:
+            return False
+        
+        return model_value != self.negated
 
 class PositiveLiteral(Literal):
     def __init__(self, symbol: str):

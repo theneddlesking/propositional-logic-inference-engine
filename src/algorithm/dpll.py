@@ -18,51 +18,65 @@ class DPLL(InferenceAlgorithm):
         # add cnfs
         knowledge_base.clauses.extend(query_cnfs)
 
-        satisifable = self.dpll(knowledge_base)
+        # symbols
+        symbols = knowledge_base.symbols
 
-        return DPLLResult(satisifable, knowledge_base.copy())        
+        # if query symbol not in knowledge base then it must be unsatisfiable
+        for clause in query_cnfs:
+            for literal in clause.literals:
+                if literal.name not in symbols:
+                    return DPLLResult(False, knowledge_base.copy())
+                
+        # all symbols start unassigned
+        model = Model({symbol: None for symbol in symbols})
 
-    def dpll(self, cnf: CNFKnowledgeBase) -> bool:
-        # the clause is a unit clause if it has only one unassigned literal and the rest are false
-        # the one unassigned literal is the unit literal
+        # run dpll
+        satisfiable = self.dpll(knowledge_base, model)
 
-        # a clause is true if for each literal in the clause, the literal is true (satisfies the partial model)
-        # otherwise the clause is unassigned
+        return DPLLResult(satisfiable, knowledge_base.copy())        
 
-        # a formula is true if all clauses in the formula are true
-        # a formula is false if one clause in the formula is false
-        # otherwise the formula is unassigned
+    def dpll(self, cnf: CNFKnowledgeBase, model: Model) -> bool:
 
-        # propogate unit literals from unit clauses
-        while cnf.has_unit_clause():
-            # propagate the unit literal
-            cnf.unit_propagate()
+        print("model")
+        print(model)
 
-        pure_literals = cnf.get_pure_literals()
-
-        # check for pure symbols
-        # pure symbols are symbols that only appear as positive or negative literals throughout the knowledge base
-        for literal in pure_literals:
-            cnf.assign_pure_literal(literal)
-
-        if cnf.is_empty():
+        # cnf satisfied
+        if cnf.satisfies(model):
             return True
         
-        if cnf.has_empty_clause():
+        # print clauses
+        print("clauses")
+        for clause in cnf.clauses:
+            print(clause)
+        
+        # cnf contains empty clause and therefore is unsatisfiable
+        if cnf.contains_empty_clause():
+            print("found an empty clause in that model")
             return False
         
-        # choose a symbol
-        p = cnf.choose_symbol()
+        # choose a symbol that is not yet assigned
+        symbol = self.choose_symbol(model)
 
-        # create a new knowledge base with p assigned true
-        knowledge_base_true = cnf.copy()
+        print("choose", symbol)
 
-        knowledge_base_true.assign(p, True)
+        # create positive and negative models
+        positive_model = model.copy()
+        positive_model.set(symbol.name, True)
 
-        # create a new knowledge base with p assigned false
-        knowledge_base_false = cnf.copy()
+        negative_model = model.copy()
+        negative_model.set(symbol.name, False)
 
-        knowledge_base_false.assign(p, False)
+        # simplify the cnf
+        simplified_cnf_positive = cnf.simplify(positive_model)
+        simplified_cnf_negative = cnf.simplify(negative_model)
 
-        return self.dpll(knowledge_base_true) or self.dpll(knowledge_base_false)
+        # recursively call dpll
+        return self.dpll(simplified_cnf_positive, positive_model) or self.dpll(simplified_cnf_negative, negative_model)
+
     
+    def choose_symbol(self, model: Model) -> Literal:
+        for symbol, value in model.values.items():
+            if value is None:
+                return Literal(symbol)
+        
+        raise ValueError("No symbol to choose from. This shouldn't occur")
