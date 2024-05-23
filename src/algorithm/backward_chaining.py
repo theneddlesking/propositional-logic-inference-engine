@@ -24,6 +24,12 @@ class BackwardChaining(InferenceAlgorithm):
         return ChainingResult(self.name, found, entailed)
 
     def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral], visited: set[PositiveLiteral]) -> bool:
+        # ensure that we don't loop but also that we can access already entailed literals
+        if goal in visited and goal not in entailed:
+            return False
+        
+        visited.add(goal)
+
         # if the goal is already a fact
         if goal in knowledge_base.facts:
             # we have entailed this known fact
