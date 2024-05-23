@@ -210,8 +210,7 @@ class Expression(Sentence):
             opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
 
             # only if we find brackets
-            if opening_bracket_index != -1:
-                closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+            closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
 
             # between lhs and rhs there is an operator
             # but the operator could be 1 length, 2 length of 3 length
@@ -267,12 +266,15 @@ class Expression(Sentence):
     def get_symbols(self) -> set[Literal]:
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
     
+    # CNF is where the sentence is a conjunction of disjunctions
     def get_cnfs(self) -> list['CNFClause']:
+        # so we have to remove biconditionals and implications
         sentence = self.convert_biconditionals()
-
         sentence = sentence.convert_implications()
 
-        # HUGE TODO: refactor this
+        # now we remove double negations and apply de morgan's laws
+        # this is done until the string doesn't change anymore
+        # once this occurs the sentence is now in negation normal form (flattened)
         previous_string = str(sentence)
         while True:
             sentence = sentence.remove_double_negations()
@@ -282,9 +284,14 @@ class Expression(Sentence):
                 break
             previous_string = str(sentence)        
 
+        # we have both negated sentences and negated literals
+        # to simplify the next step we know that each negated sentence must only have one literal in it
+        # so we convert them to negated literals
         sentence = sentence.convert_negated_sentence_to_negated_literal()
 
-        # HUGE TODO: refactor this
+        # now we distribute the conjunctions over the disjunctions
+        # this is done until the string doesn't change anymore
+        # this gives us the CNF
         previous_string = str(sentence)
         while True:
             sentence = sentence.distribute_conjuctions_over_disjunctions()

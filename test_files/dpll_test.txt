@@ -6,5 +6,5 @@ ASK
 Basic DPLL Test
 This is a generic test for DPLL
 YES: 1
-a     | b     |
+a      | b     |
 False  | True |

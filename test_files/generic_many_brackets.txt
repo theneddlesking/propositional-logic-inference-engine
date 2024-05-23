@@ -1,0 +1,10 @@
+TELL
+((((a))));
+ASK
+a
+
+Generic KB With Many Brackets
+Check if the sentence can be correctly parsed with many layers of brackets.
+YES: 1
+a      |
+True   |
