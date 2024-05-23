@@ -36,28 +36,20 @@ class DPLL(InferenceAlgorithm):
         return DPLLResult(satisfiable, knowledge_base.copy())        
 
     def dpll(self, cnf: CNFKnowledgeBase, model: Model) -> bool:
-
-        print("model")
-        print(model)
-
         # cnf satisfied
         if cnf.satisfies(model):
             return True
         
-        # print clauses
-        print("clauses")
-        for clause in cnf.clauses:
-            print(clause)
-        
         # cnf contains empty clause and therefore is unsatisfiable
         if cnf.contains_empty_clause():
-            print("found an empty clause in that model")
             return False
         
         # choose a symbol that is not yet assigned
         symbol = self.choose_symbol(model)
 
-        print("choose", symbol)
+        # no more symbols to assign, check if the cnf is satisfied
+        if symbol is None:
+            return False
 
         # create positive and negative models
         positive_model = model.copy()
@@ -78,5 +70,4 @@ class DPLL(InferenceAlgorithm):
         for symbol, value in model.values.items():
             if value is None:
                 return Literal(symbol)
-        
-        raise ValueError("No symbol to choose from. This shouldn't occur")
+        return None

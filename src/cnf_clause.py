@@ -15,15 +15,18 @@ class CNFClause:
     def is_empty(self) -> bool:
         return len(self.literals) == 0
     
-    def simplify(self, model: Model) -> 'CNFClause':
+    def simplify(self, model: Model) -> tuple['CNFClause', bool]:
         # if any literal is satisfied, the clause is satisfied
         if self.satisfied(model):
-            return CNFClause([])
+
+            # simplified to empty clause but still satisfied
+            return CNFClause([]), True
         
         # otherwise the clause is not satisfied but we can simplify it by removing all literals that are explicitly false
         new_literals = [literal for literal in self.literals if (model.get(literal.name) != False)]
 
-        return CNFClause(new_literals)
+        # simplified to clause, but could be empty, if it is empty, it is not satisfied
+        return CNFClause(new_literals), False
     
     def is_tautology(self) -> bool:
         for symbol in self.literals:

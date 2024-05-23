@@ -42,6 +42,14 @@ class CNFKnowledgeBase():
         return any(clause.is_empty() for clause in self.clauses)
     
     def simplify(self, model: Model) -> 'CNFKnowledgeBase':
-        new_clauses = [clause.simplify(model.values) for clause in self.clauses]
+        new_clauses = []
+
+        for clause in self.clauses:
+            new_clause, satisified = clause.simplify(model)
+
+            # if the clause is satisfied, we can ignore it
+            if not satisified:
+                new_clauses.append(new_clause)
+
         return CNFKnowledgeBase(new_clauses, self.symbols)
         
