@@ -51,40 +51,5 @@ class CNFKnowledgeBase():
         # simplify the unsatisfied clauses
         new_clauses = [clause.simplify(model) for clause in unsatisied_clauses]
 
-        # # optimise clauses by removing pure literals
-        # pure_literals = self.get_pure_literals(new_clauses)
-
-        # # remove the pure literals from the clauses
-        # for clause in new_clauses:
-        #     clause.literals = [literal for literal in clause.literals if literal not in pure_literals]
-
-        # # update the symbols
-        # new_symbols = self.symbols - set([literal.name for literal in pure_literals])
-
-        # # update model
-        # model = Model({symbol: model.get(symbol) for symbol in new_symbols})
-
         return CNFKnowledgeBase(new_clauses, self.symbols)
-    
-    def get_pure_literals(self, clauses: list[CNFClause]) -> set[Literal]:
-        # get all the literals
-        literals: set[Literal] = set()
 
-        for clause in clauses:
-            for literal in clause.literals:
-                literals.add(literal)
-
-        # get all the pure literals
-        pure_literals = set()
-
-        for literal in literals:
-
-            # literal is pure if it has constant polarity across all clauses
-            opposite_literal = Literal(literal.name, not literal.negated)
-
-            # check if the opposite literal is in the clauses
-            if opposite_literal not in literals:
-                pure_literals.add(literal)
-
-        return pure_literals
-    
