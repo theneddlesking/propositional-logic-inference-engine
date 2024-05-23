@@ -154,7 +154,6 @@ class Expression(Sentence):
 
             # negated sentence
             else:
-                # TODO: refactor, this shit is too similar to opening bracket below
                 # we need to negate this sentence
                 opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
                 closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
