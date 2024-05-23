@@ -15,12 +15,15 @@ class BackwardChaining(InferenceAlgorithm):
         # entailed symbols
         entailed = set()
 
+        # visited goals
+        visited = set()
+
         # do the backward chaining recursively
-        found = self.backwards_chaining(knowledge_base, goal, entailed)
+        found = self.backwards_chaining(knowledge_base, goal, entailed, visited)
 
         return ChainingResult(self.name, found, entailed)
 
-    def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral]) -> bool:
+    def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral], visited: set[PositiveLiteral]) -> bool:
         # if the goal is already a fact
         if goal in knowledge_base.facts:
             # we have entailed this known fact
@@ -31,7 +34,8 @@ class BackwardChaining(InferenceAlgorithm):
         for rule in knowledge_base.rules:
             if rule.head == goal:
                 # check if all the symbols in the body are entailed
-                if all([self.backwards_chaining(knowledge_base, symbol, entailed) for symbol in rule.body]):
+                if all([self.backwards_chaining(knowledge_base, symbol, entailed, visited) for symbol in rule.body]):
                     entailed.add(goal)
                     return True
+                
         return False

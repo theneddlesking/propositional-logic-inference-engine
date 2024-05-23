@@ -1,0 +1,9 @@
+TELL
+a => a; b => b; c => c;
+ASK
+b
+
+Horn KB Redundant Implies
+Test how the different algorithms interact with a horn KB with redundant implications. 
+NO:
+NO: 

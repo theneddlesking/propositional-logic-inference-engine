@@ -1,0 +1,9 @@
+TELL
+a & b & c & d & e & f & g => h; a; b; c; d; e; f; g;
+ASK
+h
+
+Horn KB With One Long Clause
+Tests whether the horn KB is correctly made and parsed with only one clause.
+YES: a, b, c, d, e, f, g, h
+YES: a, b, c, d, e, f, g, h
