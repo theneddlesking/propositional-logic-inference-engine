@@ -4,6 +4,6 @@ ASK
 c
 
 Cyclic Horn KB
-A cyclical horn KB where the head and body of two clauses imply one another
+A cyclical horn KB where the head and body of two clauses imply one another. This specifically checks if BC is resistant to these cyclical knowledge bases as it is a recursive algorithm
 NO: 
 NO:

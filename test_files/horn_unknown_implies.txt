@@ -1,0 +1,9 @@
+TELL
+a => b;
+ASK
+b
+
+Horn KB Unknown Implies
+Test how the algorithms handle an implication with an unknown literal as the body
+NO:
+NO: 
