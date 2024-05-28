@@ -5,6 +5,7 @@ from src.result.chaining_result import ChainingResult
 from src.syntax.literal import PositiveLiteral
 from src.syntax.sentence import Sentence
 
+
 class ForwardChaining(InferenceAlgorithm):
 
     def __init__(self):
@@ -14,9 +15,11 @@ class ForwardChaining(InferenceAlgorithm):
     # the results may be different from the provided implementation
 
     # ? I'm not sure what ordering they use but maybe it's alphabetical?
-    
+
     # uses horn kb
-    def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> ChainingResult:
+    def run(
+        self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery
+    ) -> ChainingResult:
         # gets the counts of symbols in the body of each sentence
         count = self.init_count(knowledge_base)
 
@@ -37,14 +40,14 @@ class ForwardChaining(InferenceAlgorithm):
             # skip if in entailed
             if p in entailed:
                 continue
-            
+
             # we have entailed the consequent
             entailed.add(p)
-            
+
             # we found the wanted symbol
             if wanted == p:
                 return ChainingResult(self.name, True, entailed | set(agenda))
-            
+
             # for every sentence in the kb
             for clause in knowledge_base.rules:
 
@@ -55,13 +58,13 @@ class ForwardChaining(InferenceAlgorithm):
 
                     # if all the symbols in the body are in the entailed symbols
                     if count[clause] == 0:
-                        
+
                         # add the head of the sentence to the agenda
                         agenda.append(clause.head)
 
         # we couldn't find it
         return ChainingResult(self.name, False, entailed | set(agenda))
-        
+
     # init count
     def init_count(self, knowledge_base: HornKnowledgeBase) -> dict[Sentence, int]:
         # dict for sentence to count of symbols in body lookup eg. A & B => C; count = 2
@@ -69,7 +72,7 @@ class ForwardChaining(InferenceAlgorithm):
 
         # for every clause count the number of symbols in the body
         for clause in knowledge_base.rules:
-                # add the count to the dict
-                count[clause] = len(clause.body)
+            # add the count to the dict
+            count[clause] = len(clause.body)
 
         return count

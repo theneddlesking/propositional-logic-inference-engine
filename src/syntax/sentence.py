@@ -5,53 +5,73 @@ from src.syntax.operator import Operator
 from src.syntax.literal import Literal, PositiveLiteral
 from src.syntax.utils import Utils
 
+
 class Sentence:
-    
+
     @classmethod
-    def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Sentence':
+    def from_string(cls, string: str, known_symbols: set[Literal]) -> "Sentence":
         # is the string a proposition symbol?
-        if Utils.is_propositional_symbol(string) or Utils.is_negated_propositional_symbol(string):
+        if Utils.is_propositional_symbol(
+            string
+        ) or Utils.is_negated_propositional_symbol(string):
             known_symbols.add(Literal.from_string(string))
 
             # atomic sentence needs to know if its negated or not
             return AtomicSentence(Literal.from_string(string))
-        
+
         # is the string a boolean value?
         if Utils.is_true_false(string):
             return AtomicSentence(BoolAtom.from_string(string))
 
         # otherwise this is a complex sentence
         return Expression.from_string(string, known_symbols)
-    
+
     def get_symbols(self) -> set[Literal]:
         raise NotImplementedError("Get symbols should be implemented in subclasses.")
-    
+
     def evaluate(self, model: Model) -> bool:
         raise NotImplementedError("Evaluate should be implemented in subclasses.")
-    
-    def get_cnfs(self) -> 'list[CNFClause]':
-        raise NotImplementedError("Converting to CNF should be implemented in subclasses.")
-    
-    def convert_biconditionals(self) -> 'Sentence':
-        raise NotImplementedError("Converting biconditionals should be implemented in subclasses.")
-    
-    def convert_implications(self) -> 'Sentence':
-        raise NotImplementedError("Converting implications should be implemented in subclasses.")
-    
-    def remove_double_negations(self) -> 'Sentence':
-        raise NotImplementedError("Removing double negations should be implemented in subclasses.")
-    
-    def apply_de_morgans_laws(self) -> 'Sentence':
-        raise NotImplementedError("Applying De Morgan's laws should be implemented in subclasses.")
-    
-    def distribute_conjuctions_over_disjunctions(self) -> 'Sentence':
-        raise NotImplementedError("Distributing conjunctions over disjunctions should be implemented in subclasses.")
-    
-    def convert_negated_sentence_to_negated_literal(self) -> 'Sentence':
-        raise NotImplementedError("Converted negated sentences should be implemented in subclasses.")
-    
-    def get_cnf_subsentences(self) -> list['CNFClause']:
-        raise NotImplementedError("Getting CNF sub sentences should be implemented in subclasses.")
+
+    def get_cnfs(self) -> "list[CNFClause]":
+        raise NotImplementedError(
+            "Converting to CNF should be implemented in subclasses."
+        )
+
+    def convert_biconditionals(self) -> "Sentence":
+        raise NotImplementedError(
+            "Converting biconditionals should be implemented in subclasses."
+        )
+
+    def convert_implications(self) -> "Sentence":
+        raise NotImplementedError(
+            "Converting implications should be implemented in subclasses."
+        )
+
+    def remove_double_negations(self) -> "Sentence":
+        raise NotImplementedError(
+            "Removing double negations should be implemented in subclasses."
+        )
+
+    def apply_de_morgans_laws(self) -> "Sentence":
+        raise NotImplementedError(
+            "Applying De Morgan's laws should be implemented in subclasses."
+        )
+
+    def distribute_conjuctions_over_disjunctions(self) -> "Sentence":
+        raise NotImplementedError(
+            "Distributing conjunctions over disjunctions should be implemented in subclasses."
+        )
+
+    def convert_negated_sentence_to_negated_literal(self) -> "Sentence":
+        raise NotImplementedError(
+            "Converted negated sentences should be implemented in subclasses."
+        )
+
+    def get_cnf_subsentences(self) -> list["CNFClause"]:
+        raise NotImplementedError(
+            "Getting CNF sub sentences should be implemented in subclasses."
+        )
+
 
 class AtomicSentence(Sentence):
     def __init__(self, atom: Atom):
@@ -60,10 +80,10 @@ class AtomicSentence(Sentence):
 
     def __str__(self):
         return str(self.atom)
-    
-    def __eq__(self, other: 'AtomicSentence'):
+
+    def __eq__(self, other: "AtomicSentence"):
         return self.atom == other.atom
-    
+
     def evaluate(self, model: Model) -> bool:
         # handle negation of the atom
         value_according_model = model.get(self.atom.name)
@@ -71,36 +91,37 @@ class AtomicSentence(Sentence):
         # if the atom is negated, we need to negate the value according to the model
         if self.atom.negated:
             return not value_according_model
-    
+
         return value_according_model
-    
+
     def get_symbols(self) -> set[Literal]:
         return set([self.atom])
-    
+
     def get_cnfs(self) -> list[CNFClause]:
         return [CNFClause(set([self.atom]))]
-    
+
     def convert_biconditionals(self) -> Sentence:
         return self
-    
+
     def convert_implications(self) -> Sentence:
         return self
 
     def remove_double_negations(self) -> Sentence:
         return self
-    
+
     def apply_de_morgans_laws(self) -> Sentence:
         return self
-    
+
     def distribute_conjuctions_over_disjunctions(self) -> Sentence:
         return self
-    
+
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         return self
-    
-    def get_cnf_subsentences(self) -> list['CNFClause']:
+
+    def get_cnf_subsentences(self) -> list["CNFClause"]:
         return [CNFClause(set([self.atom]))]
-    
+
+
 class Expression(Sentence):
     def __init__(self, lhs: Sentence, operator: Operator, rhs: Sentence):
         self.lhs = lhs
@@ -113,7 +134,7 @@ class Expression(Sentence):
             return f"{self.operator}{self.rhs}"
 
         return f"({self.lhs} {self.operator} {self.rhs})"
-    
+
     @staticmethod
     def get_operator(string: str):
         # find the operator can be multiple chars long
@@ -128,14 +149,14 @@ class Expression(Sentence):
             if op.value in string and string.index(op.value) < index:
                 operator = op
                 index = string.index(op.value)
-        
+
         if operator is None:
             raise ValueError(f"Could not find an operator in {string}")
-        
+
         return operator
-        
+
     @classmethod
-    def from_string(cls, string: str, known_symbols: set[Literal]) -> 'Expression':
+    def from_string(cls, string: str, known_symbols: set[Literal]) -> "Expression":
         # get operator
         operator = cls.get_operator(string)
 
@@ -145,18 +166,25 @@ class Expression(Sentence):
 
             negation_length = len(Operator.NEGATION.value)
 
-            next_char_is_bracket = string[negation_index + negation_length] == Operator.OPENING_BRACKET.value
+            next_char_is_bracket = (
+                string[negation_index + negation_length]
+                == Operator.OPENING_BRACKET.value
+            )
 
             # negated literal
             if not next_char_is_bracket:
                 # if its not a bracket then we need to find the next operator because the negation is only for the next literal
-                operator = cls.get_operator(string[(negation_index + negation_length):])
+                operator = cls.get_operator(
+                    string[(negation_index + negation_length) :]
+                )
 
             # negated sentence
             else:
                 # we need to negate this sentence
                 opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
-                closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+                closing_bracket_index = Utils.find_matching_bracket(
+                    string, opening_bracket_index
+                )
 
                 operator_substring = string[closing_bracket_index:]
 
@@ -167,18 +195,22 @@ class Expression(Sentence):
                     negated_sentence = Sentence.from_string(string[2:-1], known_symbols)
 
                     return Expression(None, Operator.NEGATION, negated_sentence)
-                
+
                 # get the next operator after the closing bracket
                 second_operator = cls.get_operator(operator_substring)
 
                 # first part: get the local index of the second operator in the operator substring
                 # second part: add the index of where it is in the actual string
-                second_operator_index = operator_substring.find(second_operator.value) + (len(string) - len(operator_substring))
+                second_operator_index = operator_substring.find(
+                    second_operator.value
+                ) + (len(string) - len(operator_substring))
 
                 # lhs_string is everything before the second operator index
                 # rhs_string is everything after the second operator index plus the operator's length
                 lhs_string = string[opening_bracket_index:second_operator_index]
-                rhs_string = string[second_operator_index + len(second_operator.value):]
+                rhs_string = string[
+                    second_operator_index + len(second_operator.value) :
+                ]
 
                 lhs = Sentence.from_string(lhs_string, known_symbols)
                 rhs = Sentence.from_string(rhs_string, known_symbols)
@@ -186,7 +218,7 @@ class Expression(Sentence):
                 negated_sentence = Expression(None, Operator.NEGATION, lhs)
 
                 return Expression(negated_sentence, second_operator, rhs)
-            
+
         # There are 3 bracket cases:
         # 1. (A&B)&C
         # 2. A&(B&C)
@@ -202,14 +234,16 @@ class Expression(Sentence):
         # Therefore, we only need to handle Case 1
 
         # Case 1 is when the first operator is a bracket
-        
+
         # if the first operator is a bracket then we need to group that as LHS
         if operator == Operator.OPENING_BRACKET:
             # get the first bracketed sentence
             opening_bracket_index = string.find(Operator.OPENING_BRACKET.value)
 
             # only if we find brackets
-            closing_bracket_index = Utils.find_matching_bracket(string, opening_bracket_index)
+            closing_bracket_index = Utils.find_matching_bracket(
+                string, opening_bracket_index
+            )
 
             # between lhs and rhs there is an operator
             # but the operator could be 1 length, 2 length of 3 length
@@ -221,52 +255,64 @@ class Expression(Sentence):
             if len(operator_substring) == 0:
                 # so we just take the lhs
                 return Sentence.from_string(string[1:-1], known_symbols)
-            
+
             # get the next operator after the closing bracket
             second_operator = cls.get_operator(operator_substring)
 
             # first part: get the local index of the second operator in the operator substring
             # second part: add the index of where it is in the actual string
-            second_operator_index = operator_substring.find(second_operator.value) + (len(string) - len(operator_substring))
+            second_operator_index = operator_substring.find(second_operator.value) + (
+                len(string) - len(operator_substring)
+            )
 
             # lhs is everything before the second operator index
             # rhs is everything after the second operator index plus the operator's length
             lhs = string[:second_operator_index]
-            rhs = string[second_operator_index + len(second_operator.value):]
+            rhs = string[second_operator_index + len(second_operator.value) :]
 
-            return cls(Sentence.from_string(lhs, known_symbols), second_operator, Sentence.from_string(rhs, known_symbols))
-        
+            return cls(
+                Sentence.from_string(lhs, known_symbols),
+                second_operator,
+                Sentence.from_string(rhs, known_symbols),
+            )
+
         # split the string into lhs and rhs at the first operator only
         lhs, rhs = string.split(operator.value, 1)
-        
-        return cls(Sentence.from_string(lhs, known_symbols), operator, Sentence.from_string(rhs, known_symbols))
-    
+
+        return cls(
+            Sentence.from_string(lhs, known_symbols),
+            operator,
+            Sentence.from_string(rhs, known_symbols),
+        )
+
     def evaluate(self, model: Model) -> bool:
         if self.operator == Operator.NEGATION:
             return not self.rhs.evaluate(model)
 
         if self.operator == Operator.CONJUNCTION:
             return self.lhs.evaluate(model) and self.rhs.evaluate(model)
-        
+
         if self.operator == Operator.DISJUNCTION:
             return self.lhs.evaluate(model) or self.rhs.evaluate(model)
-        
+
         # A=>B is equivalent to -A or B according to material implication
         if self.operator == Operator.IMPLICATION:
             return not self.lhs.evaluate(model) or self.rhs.evaluate(model)
-        
+
         # A<=>B is equivalent to (A=>B) and (B=>A) according to material equivalence
         # which is equivalent to (-A or B) and (-B or A) according to material implication
         if self.operator == Operator.BICONDITIONAL:
-            return (not self.lhs.evaluate(model) or self.rhs.evaluate(model)) and (not self.rhs.evaluate(model) or self.lhs.evaluate(model))
+            return (not self.lhs.evaluate(model) or self.rhs.evaluate(model)) and (
+                not self.rhs.evaluate(model) or self.lhs.evaluate(model)
+            )
 
         raise ValueError(f"Operator {self.operator} not supported.")
-    
+
     def get_symbols(self) -> set[Literal]:
         return self.lhs.get_symbols().union(self.rhs.get_symbols())
-    
+
     # CNF is where the sentence is a conjunction of disjunctions
-    def get_cnfs(self) -> list['CNFClause']:
+    def get_cnfs(self) -> list["CNFClause"]:
         # so we have to remove biconditionals and implications
         sentence = self.convert_biconditionals()
         sentence = sentence.convert_implications()
@@ -281,7 +327,7 @@ class Expression(Sentence):
 
             if previous_string == str(sentence):
                 break
-            previous_string = str(sentence)        
+            previous_string = str(sentence)
 
         # we have both negated sentences and negated literals
         # to simplify the next step we know that each negated sentence must only have one literal in it
@@ -300,7 +346,7 @@ class Expression(Sentence):
 
         cnfs = sentence.get_cnf_subsentences()
         return cnfs
-    
+
     def convert_biconditionals(self) -> Sentence:
         # negation expression doesn't have a lhs
         if self.operator != Operator.NEGATION:
@@ -314,7 +360,7 @@ class Expression(Sentence):
             implication_lhs = Expression(self.lhs, Operator.IMPLICATION, self.rhs)
             implication_rhs = Expression(self.rhs, Operator.IMPLICATION, self.lhs)
             return Expression(implication_lhs, Operator.CONJUNCTION, implication_rhs)
-    
+
         return self
 
     def convert_implications(self) -> Sentence:
@@ -329,14 +375,14 @@ class Expression(Sentence):
             # A => B === ~A || B
             not_lhs = Expression(None, Operator.NEGATION, self.lhs)
             return Expression(not_lhs, Operator.DISJUNCTION, self.rhs)
-    
+
         return self
 
     def apply_de_morgans_laws(self) -> Sentence:
         # check if we are negated
         if self.operator == Operator.NEGATION:
             # if we are negated then we want to apply de morgan's laws to the rhs
-            
+
             # if the rhs is an expression then we need to apply de morgan's laws to it
             if isinstance(self.rhs, Expression) and self.rhs.lhs is not None:
                 # apply de morgan's laws to the rhs
@@ -347,21 +393,36 @@ class Expression(Sentence):
                 inner_operator = inner_expression.operator
 
                 # make sure that we only allow ands and ors
-                if inner_operator != Operator.DISJUNCTION and inner_operator != Operator.CONJUNCTION:
-                    raise ValueError("The operator is " + inner_operator.value + " and is not a disjunction or a conjunction")
+                if (
+                    inner_operator != Operator.DISJUNCTION
+                    and inner_operator != Operator.CONJUNCTION
+                ):
+                    raise ValueError(
+                        "The operator is "
+                        + inner_operator.value
+                        + " and is not a disjunction or a conjunction"
+                    )
 
                 # get the lhs and rhs
                 inner_lhs = inner_expression.lhs
                 inner_rhs = inner_expression.rhs
 
                 # flip the operator depending on the inner operator
-                other_operator = Operator.CONJUNCTION if inner_operator == Operator.DISJUNCTION else Operator.DISJUNCTION
+                other_operator = (
+                    Operator.CONJUNCTION
+                    if inner_operator == Operator.DISJUNCTION
+                    else Operator.DISJUNCTION
+                )
 
                 # apply de morgans law
                 negated_inner_lhs = Expression(None, Operator.NEGATION, inner_lhs)
                 negated_inner_rhs = Expression(None, Operator.NEGATION, inner_rhs)
-                return Expression(negated_inner_lhs.apply_de_morgans_laws(), other_operator, negated_inner_rhs.apply_de_morgans_laws())
-            
+                return Expression(
+                    negated_inner_lhs.apply_de_morgans_laws(),
+                    other_operator,
+                    negated_inner_rhs.apply_de_morgans_laws(),
+                )
+
             # if its an atom it can't be affected by de morgan's laws so we don't even need to recurse
             return self
 
@@ -385,18 +446,18 @@ class Expression(Sentence):
             if self.rhs.operator == Operator.NEGATION:
                 # recurse rhs
                 return self.rhs.rhs.remove_double_negations()
-                        
+
             # child is not negated so we can just recurse as there is no double negation
             self.rhs = self.rhs.remove_double_negations()
             return self
-        
+
         # othercase is that the rhs is an atomic sentence
         self.rhs: AtomicSentence
 
         # if atom is negated there is a double negation
         if self.rhs.atom.negated:
             return AtomicSentence(Literal(self.rhs.atom.name, False))
-        
+
         # not double negation
         return self
 
@@ -409,7 +470,9 @@ class Expression(Sentence):
 
             # we need to distribute over the inner and outer side
             # we can't distribute over atomic sentences
-            if not (isinstance(lhs, AtomicSentence) and isinstance(rhs, AtomicSentence)):
+            if not (
+                isinstance(lhs, AtomicSentence) and isinstance(rhs, AtomicSentence)
+            ):
 
                 # there are 3 other cases:
                 # A || (B & C)
@@ -422,7 +485,11 @@ class Expression(Sentence):
                 # so case 2 and 3 we make inner lhs
                 # case 1 we make inner rhs
 
-                if isinstance(rhs, AtomicSentence) or (isinstance(lhs, Expression) and isinstance(rhs, Expression) and rhs.operator == Operator.DISJUNCTION):
+                if isinstance(rhs, AtomicSentence) or (
+                    isinstance(lhs, Expression)
+                    and isinstance(rhs, Expression)
+                    and rhs.operator == Operator.DISJUNCTION
+                ):
                     inner = lhs
                     outer = rhs
                 else:
@@ -438,55 +505,79 @@ class Expression(Sentence):
         self.rhs = self.rhs.distribute_conjuctions_over_disjunctions()
 
         return self
-    
+
     @staticmethod
-    def apply_distributive_law(outer: 'Sentence', inner: 'Expression') -> 'Expression':                
+    def apply_distributive_law(outer: "Sentence", inner: "Expression") -> "Expression":
         distributed_lhs = Expression(outer, Operator.DISJUNCTION, inner.lhs)
         distributed_rhs = Expression(outer, Operator.DISJUNCTION, inner.rhs)
-        return Expression(distributed_lhs.distribute_conjuctions_over_disjunctions(), Operator.CONJUNCTION, distributed_rhs.distribute_conjuctions_over_disjunctions())
+        return Expression(
+            distributed_lhs.distribute_conjuctions_over_disjunctions(),
+            Operator.CONJUNCTION,
+            distributed_rhs.distribute_conjuctions_over_disjunctions(),
+        )
 
     def convert_negated_sentence_to_negated_literal(self) -> Sentence:
         # convert to a negated atomic sentence
         if self.operator == Operator.NEGATION:
             return AtomicSentence(Literal(self.rhs.atom.name, True))
-        
+
         # recurse
         self.lhs = self.lhs.convert_negated_sentence_to_negated_literal()
         self.rhs = self.rhs.convert_negated_sentence_to_negated_literal()
         return self
 
-    def get_cnf_subsentences(self) -> list['CNFClause']:
+    def get_cnf_subsentences(self) -> list["CNFClause"]:
         # (~a || ~b) || ((d || c) & (d || f))
         # (~a || ~b) || ((d || c) & (d || f))
         # (~a || ~b || d || c) & (d || f)
-        sentence_string = str(self).replace(" ", "").replace(Operator.OPENING_BRACKET.value, "").replace(Operator.CLOSING_BRACKET.value, "")
+        sentence_string = (
+            str(self)
+            .replace(" ", "")
+            .replace(Operator.OPENING_BRACKET.value, "")
+            .replace(Operator.CLOSING_BRACKET.value, "")
+        )
         disjunction_sentences = sentence_string.split(Operator.CONJUNCTION.value)
 
         cnfs = []
         for disjunction_sentence in disjunction_sentences:
             literals_as_strings = disjunction_sentence.split(Operator.DISJUNCTION.value)
 
-            literals = [Literal.from_string(literal_string) for literal_string in literals_as_strings]
-                
+            literals = [
+                Literal.from_string(literal_string)
+                for literal_string in literals_as_strings
+            ]
+
             cnfs.append(CNFClause(set(literals)))
 
         return cnfs
 
+
 # Horn Clause implication form is always A & B & C => D with all positive literals, there cannot be any negative literals
 # more info: https://stackoverflow.com/questions/45123756/why-do-we-call-a-disjunction-of-literals-of-which-none-is-positive-a-goal-clause
 
+
 class HornClause(Expression):
-    def __init__(self, body: list[PositiveLiteral], head: PositiveLiteral, known_symbols: set[Literal]):
+    def __init__(
+        self,
+        body: list[PositiveLiteral],
+        head: PositiveLiteral,
+        known_symbols: set[Literal],
+    ):
         self.body = body
         self.head = head
 
-        lhs = Sentence.from_string(Operator.CONJUNCTION.value.join([str(literal) for literal in self.body]), known_symbols)
+        lhs = Sentence.from_string(
+            Operator.CONJUNCTION.value.join([str(literal) for literal in self.body]),
+            known_symbols,
+        )
         rhs = AtomicSentence(self.head)
 
         super().__init__(lhs, Operator.IMPLICATION, rhs)
-        
+
     @staticmethod
-    def get_symbols(sentence: Sentence, body: list[PositiveLiteral]) -> list[PositiveLiteral]:
+    def get_symbols(
+        sentence: Sentence, body: list[PositiveLiteral]
+    ) -> list[PositiveLiteral]:
         # if sentence is expression make sure operator is conjunction or implication
         if isinstance(sentence, Expression):
             # if it is the last sentence
@@ -494,34 +585,46 @@ class HornClause(Expression):
 
             # then the last sentence needs to be implication
             if not last_sentence and sentence.operator != Operator.CONJUNCTION:
-                raise ValueError(f"Body of Horn clause must be conjunctions only.", str(sentence))
-            
+                raise ValueError(
+                    f"Body of Horn clause must be conjunctions only.", str(sentence)
+                )
+
             # else it has to be a conjunction
             if last_sentence and sentence.operator != Operator.IMPLICATION:
-                raise ValueError(f"Head of Horn clause must be implication only.", str(sentence))
+                raise ValueError(
+                    f"Head of Horn clause must be implication only.", str(sentence)
+                )
 
         # add lhs
         if isinstance(sentence.lhs, AtomicSentence):
             # check if its a positive literal
             if sentence.lhs.atom.negated:
-                raise ValueError(f"Body of Horn clause must be positive literals only.", str(sentence)) 
-    
+                raise ValueError(
+                    f"Body of Horn clause must be positive literals only.",
+                    str(sentence),
+                )
+
             body.append(sentence.lhs.atom)
-        
+
         # add rhs
         if isinstance(sentence.rhs, AtomicSentence):
             # check if its a positive literal
             if sentence.lhs.atom.negated:
-                raise ValueError(f"Body of Horn clause must be positive literals only.", str(sentence)) 
-            
+                raise ValueError(
+                    f"Body of Horn clause must be positive literals only.",
+                    str(sentence),
+                )
+
             body.append(sentence.rhs.atom)
         else:
             HornClause.get_symbols(sentence.rhs, body)
-        
+
         return body
 
     @classmethod
-    def from_expression(cls, sentence: Expression, known_symbols: set[Literal]) -> 'HornClause':
+    def from_expression(
+        cls, sentence: Expression, known_symbols: set[Literal]
+    ) -> "HornClause":
         # get symbols
         all_symbols = cls.get_symbols(sentence, [])
 
@@ -532,7 +635,6 @@ class HornClause(Expression):
         body = all_symbols
 
         return cls(body, head, known_symbols)
-    
+
     def __str__(self):
         return f"{' & '.join([str(literal) for literal in self.body])} => {self.head}"
-    

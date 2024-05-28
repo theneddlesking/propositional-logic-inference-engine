@@ -4,11 +4,14 @@ from src.query import HornKnowledgeBaseQuery
 from src.result.chaining_result import ChainingResult
 from src.syntax.literal import PositiveLiteral
 
+
 class BackwardChaining(InferenceAlgorithm):
     def __init__(self):
         super().__init__("BC")
 
-    def run(self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery) -> ChainingResult:
+    def run(
+        self, knowledge_base: HornKnowledgeBase, query: HornKnowledgeBaseQuery
+    ) -> ChainingResult:
         # ultimate goal
         goal = query.positive_literal
 
@@ -23,11 +26,17 @@ class BackwardChaining(InferenceAlgorithm):
 
         return ChainingResult(self.name, found, entailed)
 
-    def backwards_chaining(self, knowledge_base: HornKnowledgeBase, goal: PositiveLiteral, entailed: set[PositiveLiteral], visited: set[PositiveLiteral]) -> bool:
+    def backwards_chaining(
+        self,
+        knowledge_base: HornKnowledgeBase,
+        goal: PositiveLiteral,
+        entailed: set[PositiveLiteral],
+        visited: set[PositiveLiteral],
+    ) -> bool:
         # ensure that we don't loop but also that we can access already entailed literals
         if goal in visited and goal not in entailed:
             return False
-        
+
         visited.add(goal)
 
         # if the goal is already a fact
@@ -35,13 +44,20 @@ class BackwardChaining(InferenceAlgorithm):
             # we have entailed this known fact
             entailed.add(goal)
             return True
-        
+
         # check if any rule has the goal as the head
         for rule in knowledge_base.rules:
             if rule.head == goal:
                 # check if all the symbols in the body are entailed
-                if all([self.backwards_chaining(knowledge_base, symbol, entailed, visited) for symbol in rule.body]):
+                if all(
+                    [
+                        self.backwards_chaining(
+                            knowledge_base, symbol, entailed, visited
+                        )
+                        for symbol in rule.body
+                    ]
+                ):
                     entailed.add(goal)
                     return True
-                
+
         return False

@@ -3,8 +3,14 @@ from src.syntax.literal import Literal
 
 
 class KnowledgeBase:
-    def __init__(self, sentences: list[Sentence] = None, propositional_symbols: set[Literal] = None):
-        self.propositional_symbols = propositional_symbols if propositional_symbols is not None else set()
+    def __init__(
+        self,
+        sentences: list[Sentence] = None,
+        propositional_symbols: set[Literal] = None,
+    ):
+        self.propositional_symbols = (
+            propositional_symbols if propositional_symbols is not None else set()
+        )
         self.sentences = sentences if sentences is not None else []
 
         # make a copy of the symbols set without the query because it is mutable
@@ -13,7 +19,9 @@ class KnowledgeBase:
     def get_fact_literals(self) -> list[Literal]:
         sentences = self.sentences
 
-        fact_sentences = [sentence for sentence in sentences if isinstance(sentence, AtomicSentence)]
+        fact_sentences = [
+            sentence for sentence in sentences if isinstance(sentence, AtomicSentence)
+        ]
 
         # map to literals
         fact_literals = [sentence.atom for sentence in fact_sentences]
@@ -22,9 +30,9 @@ class KnowledgeBase:
         return fact_literals
 
     @classmethod
-    def from_string(cls, string: str) -> 'KnowledgeBase':
+    def from_string(cls, string: str) -> "KnowledgeBase":
         propositional_symbols = set()
-        
+
         # remove all spaces in the string
         string = string.replace(" ", "")
 
@@ -38,13 +46,16 @@ class KnowledgeBase:
         sentences = [sentence for sentence in sentences if sentence != ""]
 
         # get the actual sentences and update the propositional symbols set
-        sentences = [Sentence.from_string(sentence, propositional_symbols) for sentence in sentences]
+        sentences = [
+            Sentence.from_string(sentence, propositional_symbols)
+            for sentence in sentences
+        ]
 
         return cls(sentences, propositional_symbols)
-    
+
     def get_symbol_str(self) -> str:
         return "\n".join([str(symbol) for symbol in self.propositional_symbols])
-    
+
     def __str__(self):
         sentences = "\n".join([str(sentence) for sentence in self.sentences])
         return f"{sentences}"

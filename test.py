@@ -6,6 +6,7 @@ from src.inference_algorithm_factory import InferenceAlgorithmFactory
 from src.runner import Runner
 from src.test.unit_test_result import UnitTestResult
 
+
 def main():
     # not enough arguments
     if len(sys.argv) < 2:
@@ -34,18 +35,28 @@ def main():
         file_type = FileParser.get_file_type(file_path)
 
         if file_type == FileType.STANDARD:
-            raise ValueError(f"All files should be test files. {file} is not a test file")
+            raise ValueError(
+                f"All files should be test files. {file} is not a test file"
+            )
 
         # get the inference algorithms
-        inference_algorithms = InferenceAlgorithmFactory.get_inference_algorithms_from_file_type(file_type)
+        inference_algorithms = (
+            InferenceAlgorithmFactory.get_inference_algorithms_from_file_type(file_type)
+        )
 
         # if we have specified a specifc algorithm and it's not in the list we can't do it for this file
-        if algorithm_type and algorithm_type not in [algorithm.name for algorithm in inference_algorithms]:
-            continue        
+        if algorithm_type and algorithm_type not in [
+            algorithm.name for algorithm in inference_algorithms
+        ]:
+            continue
 
         # otherwise set the inference algorithms to the one specified
         if algorithm_type:
-            inference_algorithms = [InferenceAlgorithmFactory.get_inference_algorithm_from_name(algorithm_type)]
+            inference_algorithms = [
+                InferenceAlgorithmFactory.get_inference_algorithm_from_name(
+                    algorithm_type
+                )
+            ]
 
         # for each algorithm
         for algorithm in inference_algorithms:
@@ -75,7 +86,9 @@ def main():
     # all passed
     if all(result.passed for result in overall_results):
         # as fraction
-        print(f"\033[92mAll tests passed ({number_passed}/{len(overall_results)})\033[0m")
+        print(
+            f"\033[92mAll tests passed ({number_passed}/{len(overall_results)})\033[0m"
+        )
 
     else:
         # as fraction
@@ -87,5 +100,5 @@ def main():
 
 
 # runs the program if the file is run directly
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

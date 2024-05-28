@@ -8,39 +8,48 @@ from src.result.dpll_result import DPLLResult
 from src.result.truth_table_checking_result import TruthTableCheckingResult
 from src.syntax.literal import Literal
 
+
 class FileType(Enum):
     STANDARD = 1
     CHAINING_TEST = 2
     TRUTH_TABLE_CHECKING_TEST = 3
 
+
 class FileParser:
 
     @staticmethod
     def parse_kb_and_query(file_path: str) -> tuple[KnowledgeBase, Query]:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             # get the lines from the file
             lines = file.readlines()
 
             def remove_whitespace(s: str) -> str:
-                return s.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "")
-            
+                return (
+                    s.replace(" ", "")
+                    .replace("\t", "")
+                    .replace("\n", "")
+                    .replace("\r", "")
+                )
+
             # needs at least 4 lines
             if len(lines) < 4:
-                raise ValueError('File must have at least 4 lines')
+                raise ValueError("File must have at least 4 lines")
 
             # first line must be "TELL"
-            if lines[0].strip() != 'TELL':
+            if lines[0].strip() != "TELL":
                 raise ValueError('First line must be "TELL"')
-            
+
             # third line must be "ASK"
-            if lines[2].strip() != 'ASK':
+            if lines[2].strip() != "ASK":
                 raise ValueError('Third line must be "ASK"')
-            
+
             # second line is the knowledge base
             knowledge_base = KnowledgeBase.from_string(remove_whitespace(lines[1]))
 
             # fourth line is the query
-            query = Query.from_string(remove_whitespace(lines[3]), knowledge_base.propositional_symbols)
+            query = Query.from_string(
+                remove_whitespace(lines[3]), knowledge_base.propositional_symbols
+            )
 
             # return the knowledge base and query
             return knowledge_base, query
@@ -50,7 +59,7 @@ class FileParser:
         # number of lines
         number_of_lines = 0
 
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             # get the lines from the file
             lines = file.readlines()
 
@@ -59,30 +68,40 @@ class FileParser:
 
         # less than 3 lines is invalid
         if number_of_lines < 3:
-            raise ValueError('File must have at least 3 lines')
+            raise ValueError("File must have at least 3 lines")
 
         # standard file
         if number_of_lines == 4:
             return FileType.STANDARD
-        
+
         # horn kb test file
         if number_of_lines == 9:
             return FileType.CHAINING_TEST
-        
+
         # general kb test file
         return FileType.TRUTH_TABLE_CHECKING_TEST
-        
-    @staticmethod
-    def parse_test(file_path: str, file_type: FileType, algorithm_name: str) -> tuple[AlgorithmResult, str, str]:
-        # can't use horn kb for anything other than FC or BC
-        if algorithm_name != "FC" and algorithm_name != "BC" and file_type == FileType.CHAINING_TEST:
-            raise ValueError('Chaining test file can only be used with FC or BC')
-        
-        # can't use general kb for anything other than TT and DPLL
-        if (algorithm_name != "TT" and algorithm_name != "DPLL") and file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
-            raise ValueError('Truth table checking test file can only be used with TT and DPLL')
 
-        with open(file_path, 'r') as file:
+    @staticmethod
+    def parse_test(
+        file_path: str, file_type: FileType, algorithm_name: str
+    ) -> tuple[AlgorithmResult, str, str]:
+        # can't use horn kb for anything other than FC or BC
+        if (
+            algorithm_name != "FC"
+            and algorithm_name != "BC"
+            and file_type == FileType.CHAINING_TEST
+        ):
+            raise ValueError("Chaining test file can only be used with FC or BC")
+
+        # can't use general kb for anything other than TT and DPLL
+        if (
+            algorithm_name != "TT" and algorithm_name != "DPLL"
+        ) and file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
+            raise ValueError(
+                "Truth table checking test file can only be used with TT and DPLL"
+            )
+
+        with open(file_path, "r") as file:
             # get the lines from the file
             lines = file.readlines()
 
@@ -106,7 +125,7 @@ class FileParser:
             # line needs YES: or NO: in it
             if result_line.find("YES: ") == -1 and result_line.find("NO: ") == -1:
                 raise ValueError('Expected result line must contain "YES" or "NO"')
-            
+
             # found if YES is in the line
             found = result_line.find("YES: ") != -1
 
@@ -124,8 +143,12 @@ class FileParser:
                 # convert to literals
                 entailed = {Literal(symbol) for symbol in entailed}
 
-                return ChainingResult(algorithm_name, found, entailed), name, description
-        
+                return (
+                    ChainingResult(algorithm_name, found, entailed),
+                    name,
+                    description,
+                )
+
             # get expected result for general kb
             if file_type == FileType.TRUTH_TABLE_CHECKING_TEST:
                 # dppl doesn't care about models
@@ -139,11 +162,12 @@ class FileParser:
                 if not found:
                     # check that number of models match
                     if number_of_models != 0:
-                        raise ValueError('Number of models does not match expected number of models')
+                        raise ValueError(
+                            "Number of models does not match expected number of models"
+                        )
 
-             
                     return TruthTableCheckingResult([], found), name, description
-                
+
                 # get models from table
                 models = []
 
@@ -173,13 +197,15 @@ class FileParser:
                     model = Model(model)
 
                     models.append(model)
-                
+
                 result = TruthTableCheckingResult(models, found), name, description
 
                 # check that number of models match
                 if len(models) != number_of_models:
-                    raise ValueError('Number of models does not match expected number of models')
-            
+                    raise ValueError(
+                        "Number of models does not match expected number of models"
+                    )
+
                 return result
 
             raise ValueError("File type not supported")

@@ -26,24 +26,24 @@ class DPLL(InferenceAlgorithm):
             for literal in clause.literals:
                 if literal.name not in symbols:
                     return DPLLResult(False, knowledge_base.copy())
-                
+
         # all symbols start unassigned
         model = Model({symbol: None for symbol in symbols})
 
         # run dpll
         satisfiable = self.dpll(knowledge_base, model)
 
-        return DPLLResult(satisfiable, knowledge_base.copy())        
+        return DPLLResult(satisfiable, knowledge_base.copy())
 
     def dpll(self, cnf: CNFKnowledgeBase, model: Model) -> bool:
         # cnf satisfied
         if cnf.satisfies(model):
             return True
-        
+
         # cnf contains empty clause and therefore is unsatisfiable
         if cnf.contains_empty_clause():
             return False
-        
+
         # choose a symbol that is not yet assigned
         symbol = self.choose_symbol(model)
 
@@ -63,9 +63,10 @@ class DPLL(InferenceAlgorithm):
         simplified_cnf_negative = cnf.simplify(negative_model)
 
         # recursively call dpll
-        return self.dpll(simplified_cnf_positive, positive_model) or self.dpll(simplified_cnf_negative, negative_model)
+        return self.dpll(simplified_cnf_positive, positive_model) or self.dpll(
+            simplified_cnf_negative, negative_model
+        )
 
-    
     def choose_symbol(self, model: Model) -> Literal:
         for symbol, value in model.values.items():
             if value is None:

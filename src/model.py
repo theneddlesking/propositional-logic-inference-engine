@@ -1,7 +1,7 @@
 # Class for the truth table algorithm result
 # You can think of it as the row of a typical truth table
 # where all the literals are assigned either true or false
-class Model():
+class Model:
     def __init__(self, values: dict[str, bool]):
         # sort the keys alphabetically
         values = dict(sorted(values.items()))
@@ -18,18 +18,18 @@ class Model():
         str = str[:-3]
 
         return str
-    
+
     def get(self, symbol: str) -> bool:
         return self.values[symbol]
-    
+
     def set(self, symbol: str, value: bool):
         self.values[symbol] = value
-    
-    def copy(self) -> 'Model':
+
+    def copy(self) -> "Model":
         return Model(self.values.copy())
-    
-    def __eq__(self, other: 'Model') -> bool:
+
+    def __eq__(self, other: "Model") -> bool:
         return self.values == other.values
-    
-    def __lt__(self, other: 'Model') -> bool:
+
+    def __lt__(self, other: "Model") -> bool:
         return str(self) < str(other)
